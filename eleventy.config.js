@@ -17,7 +17,7 @@ module.exports = function(eleventyConfig) {
 		"./public/": "/",
 		"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css"
 	});
-	eleventyConfig.addPassthroughCopy( "**/public/*" );
+	eleventyConfig.addPassthroughCopy( "content/**/public/*" );
 	// Run Eleventy when these files change:
 	// https://www.11ty.dev/docs/watch-serve/#add-your-own-watch-targets
 
