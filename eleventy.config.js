@@ -78,6 +78,21 @@ module.exports = function(eleventyConfig) {
 		return (tags || []).filter(tag => ["all", "nav", "post", "posts"].indexOf(tag) === -1);
 	});
 
+
+    //  adding sort by order
+    function sortByOrder(values) {
+        let vals = [...values];     // this *seems* to prevent collection mutation...
+        return vals.sort((a, b) =>
+        {
+            const dateComparison = new Date(a.date) - new Date(b.date);
+            if (dateComparison !== 0)
+                return dateComparison;
+            return a.data.order - b.data.order;
+        });
+    }
+    eleventyConfig.addFilter("sortByOrder", sortByOrder);
+
+
 	// Customize Markdown library settings:
 	eleventyConfig.amendLibrary("md", mdLib => {
 		mdLib.use(markdownItAnchor, {
