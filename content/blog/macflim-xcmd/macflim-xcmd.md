@@ -8,28 +8,25 @@ tags:
   - mac
 ---
 
-A couple of month ago, a macflim user reached to me to ask for a way to use macflim from within HyperCard.
+A couple of months ago, a macflim user reached to me to ask for a way to use macflim from within HyperCard.
 
 ## So, what is an HyperCard?
 
-HyperCard is a program written by Bill Atkinson in the mid 80s, that would let end-users create multimedia programs (called "stacks"). It was revolutionary at the time, and for many still is. Unfortunately, it did not support network access, and was not an open format. If it had been, we may be browsing the world-wide-stack today...
-
-uh?
+HyperCard is a program written by Bill Atkinson in the mid 80s, that would let end-users create multimedia programs (called "stacks"). It was revolutionary at the time, and in many ways still is. Unfortunately, it did not support network access, and was not an open format. If it had been, we could be all browsing the world-wide-stack today...
 
 {% image "img/hypercard-home.png", "Hypercard Home" %}
-
 
 Hypercard was used to create all sort of interactive programs and games. A notable HyperCard software was the original version of the video game Myst.
 
 ## Why MacFlim?
 
-While it was possible to create stack with Apple Quicktime, such technology was not available for low end macintoshes, and in general not B&W friendly. So, facing with the huge demand of a single user, it was a logical step for me to spend a hundred or so hours to implement this feature. If everything goers according to plan, I can bank to probably a couple of users at the end of 2024...
+While it was possible to create stack with Apple Quicktime, such technology was not available for low end macintoshes, and in general not Black & White friendly. So, facing with the huge demand of a single user, it was a logical step for me to spend a hundred or so hours to implement this feature. If everything goers according to plan, I can bank to probably a couple of users at the end of 2024...
 
 ## MacFlim changes
 
 Long story short, there have been quite a few changes in macflim to support hypercard:
 
-### Play anywhere
+### Play anywhere on the screen
 
 First, the ability to play anywhere on the screen. As stacks are generally self-contained, and limited to 512x342, it is expected that anything that happen in the stack happens within the stack window. So there is an obvious need to get 512x342 flims to cover exactly the window, which can be almost anywher.
 
@@ -59,14 +56,48 @@ So, there is now an option to specify that a flim will start by blitting the ini
 
 ### Cinemagraphs
 
-Cinemagraps are little movie clips that are mostly static images with some animations, and have the property of seamless looping.
+[Cinemagraphs](https://www.reddit.com/r/Cinemagraphs/) are little movie clips that are mostly static images with some animations, and have the property of seamless looping.
 
 {% image "public/Models.gif", "A cinemagraph" %}
 
+To get proper cinemagraphs, the flim needs to end on exactly the same image it started, to enable a seamless looping.
 
-, the ability not to black out the whole screen, the ability to keep a mouse cursor on top of a playing flim, the ability to start a flim from an initial image (all flims used to start from black) and the ability to end up a flim on the exact image it started with.
+## Work
+
+### XCMD
+
+An hypercard extension is named an XCMD. I created a new THINK C project that included some files from MacFlim to generate this extension.
+
+### Player
+
+The Macintosh player code needed some refactoring to access it from the MacFlim application and fro the HyperCard XCMD. Also a few deep changes were perfomed to get the new mous cursor, the "play anywhere", and the initial screen management. The complexity of the code of course increased slightly.
+
+### Encoder
+
+Weirdly, the most painful change in MacFlim one was getting a flim to end up as it started, because it implied refactoring the code of ``flimmaker`` to be able to apply the exact same transformations in two contextes (when getting images form the source vide, and when looping over the last image).
+
+At the end, the code of both the player and the encoder is slightly better and more versatile. However, it now have to support more use cases, which, as always, makes maintenance more complex.
+
+## Result
+
+blabla what is the command blabla an image of some code blabla an animated git of a stack with a flim.
+
+You can download the version 2.1 of MacFlim, with that simple HyperCard support.
+
+## How to install
+
+bla bla
 
 
-```
 
-```
+
+
+
+
+
+
+
+
+
+
+
