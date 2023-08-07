@@ -14,9 +14,10 @@ module.exports = eleventyConfig => {
 	// https://www.11ty.dev/docs/plugins/image/
 	eleventyConfig.addAsyncShortcode("image", async function imageShortcode(src, alt, widths, sizes) {
 
-		return '<img src="'+src+'" alt="${alt}" />';
-
-		console.log( "HELLO WORLD ["+src+"]");
+        if (src.endsWith( ".gif" ))
+        {
+            return '<img src="'+src+'" alt="${alt}" />';
+        }
 
 		// Full list of formats here: https://www.11ty.dev/docs/plugins/image/#output-formats
 		// Warning: Avif can be resource-intensive so take care!

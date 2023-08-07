@@ -1,6 +1,6 @@
 module.exports = {
 	title: "Fred's Retrocomputing",
-	url: "https://www.stark.fr/",
+	url: "https://www.stark.fr/new",
 	language: "en",
 	description: "My retro-computing blog",
 	author: {
