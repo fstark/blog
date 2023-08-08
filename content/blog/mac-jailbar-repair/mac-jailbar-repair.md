@@ -9,7 +9,7 @@ tags:
   - mac
 ---
 
-I came across an SE/30 for sale at a remarkably low price due to its non-functional state. Since I already own a few of these, I decided to purchase it and attempt to repair before.
+A friend came across an SE/30 for sale at a remarkably low price due to its non-functional state. Since I already own a few of these and love them, I decided to purchase it and attempt to repair before giving it to him.
 
 ## External Examination
 
@@ -28,7 +28,7 @@ It's worth noting that connecting a hard drive allows the machine to boot to the
 
 Now, it's time to open up the machine!
 
-## Inside examination
+## Internal Examination
 
 The interior of this Mac is suprisingly clean.
 
