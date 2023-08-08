@@ -63,20 +63,26 @@ module.exports = eleventyConfig => {
         const destfile = "img/large-"+metadata.jpeg[0].filename;
 
         fs.copyFile( file, path.join(eleventyConfig.dir.output, destfile), (err) => {} );
-        console.log( path.join(eleventyConfig.dir.output, destfile) );
+        // console.log( path.join(eleventyConfig.dir.output, destfile) );
 
         let markup = [];
-        console.log( file );
-        console.log( metadata );
+        // console.log( file );
+        // console.log( metadata );
         markup.push( '<a href="/'+destfile+'" target="_blank"><img' );
         markup.push( 'loading="lazy" decoding="async" src="'+metadata.jpeg[0].url+'"')
         markup.push( '></a>' );
         return markup.join(" ");
-//        return '<img alt="Jailbar Macintosh" loading="lazy" decoding="async" src="/img/TGS4K4ERl6-640.jpeg" width="640" height="853">'
-
-//		return eleventyImage.generateHTML(metadata, imageAttributes);
     });
     
+	eleventyConfig.addAsyncShortcode("blogvideo", async function imageShortcode(src, alt, widths, sizes) {
+    
+        let file = relativeToInputPath(this.page.inputPath, src);
+        const destfile = path.join(eleventyConfig.dir.output, src);
+
+    fs.copyFile( file, destfile, (err) => {} );
+
+    return '<video controls width="640"><source src="/'+src+'" type="video/mp4">Your browser does not support the video tag.</video>';
+    } );
 };
 
 /*
