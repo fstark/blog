@@ -9,7 +9,7 @@ tags:
   - mac
 ---
 
-A friend came across an SE/30 for sale at a remarkably low price due to its non-functional state. Since I already own a few of these and love them, I decided to purchase it and attempt to repair before giving it to him.
+So, I came across an SE/30 for sale at a remarkably low price due to its non-functional state. Although I already own a few of these and love them, I decided to purchase it and attempt to repair before giving it away.
 
 ## External Examination
 
