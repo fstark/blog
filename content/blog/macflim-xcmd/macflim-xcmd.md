@@ -3,7 +3,6 @@ title: Flims in HyperCard!
 description: Annoncement of MacFlim XCMD
 date: 2023-08-07
 order: 1
-draft: true
 eleventyExcludeFromCollections: true
 tags:
   - macflim

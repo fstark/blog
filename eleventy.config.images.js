@@ -42,7 +42,11 @@ module.exports = eleventyConfig => {
 		return eleventyImage.generateHTML(metadata, imageAttributes);
     });
     
-	eleventyConfig.addAsyncShortcode("blogimage", async function imageShortcode(src, alt, widths, sizes) {
+// -----------------------------------------------------
+//  Inserting an image in the blog flow
+// -----------------------------------------------------
+
+	eleventyConfig.addAsyncShortcode("blogimage", async function imageShortcode(src, caption, widths, sizes) {
 		let formats = [null];
 
 		let file = relativeToInputPath(this.page.inputPath, src);
@@ -52,14 +56,6 @@ module.exports = eleventyConfig => {
 			outputDir: path.join(eleventyConfig.dir.output, "img"), // Advanced usage note: `eleventyConfig.dir` works here because we’re using addPlugin.
 		});
 
-		// TODO loading=eager and fetchpriority=high
-		let imageAttributes = {
-			alt,
-			sizes,
-			loading: "lazy",
-			decoding: "async",
-        };
-
         const destfile = "img/large-"+metadata.jpeg[0].filename;
 
         fs.copyFile( file, path.join(eleventyConfig.dir.output, destfile), (err) => {} );
@@ -68,9 +64,9 @@ module.exports = eleventyConfig => {
         let markup = [];
         // console.log( file );
         // console.log( metadata );
-        markup.push( '<a href="/'+destfile+'" target="_blank"><img' );
+        markup.push( '<figure><a href="/'+destfile+'" target="_blank"><img' );
         markup.push( 'loading="lazy" decoding="async" src="'+metadata.jpeg[0].url+'"')
-        markup.push( '></a>' );
+        markup.push( '></a><figcaption>'+caption+'</figcaption></figure>' );
         return markup.join(" ");
     });
     

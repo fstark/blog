@@ -1,5 +1,5 @@
 ---
-title: Reparing a Jailbar SE/30
+title: Repairing a Jailbar SE/30
 description: Repair of an SE/30 suffering from jailbars
 date: 2023-08-08
 order: 1
@@ -9,7 +9,7 @@ tags:
   - mac
 ---
 
-So, I came across an SE/30 for sale at a remarkably low price due to its non-functional state. Although I already own a few of these and love them, I decided to purchase it and attempt to repair before giving it away.
+I stumbled upon an SE/30 being sold at an incredibly low price because it wasn't working. Despite already having a few of these that I hold dear, I couldn't resist buying it with the intention of trying to fix it and then passing it on to someone else.
 
 ## External Examination
 
