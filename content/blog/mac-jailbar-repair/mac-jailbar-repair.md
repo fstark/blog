@@ -126,4 +126,4 @@ Wasn't that difficult, honestly. It took around 20 minutes to diagnose and proba
 
 So, we had a broken trace between UC6 and UE8. Note how close UE8 is from the C7 capacitor. These capacitors are notorious for leaking. Additionally, with no sound, it's apparent that the C7 capacitor has indeed leaked, causing corrosive liquid to damage a trace, likely situated beneath the UE8 chip
 
-If you love you Macs, you change their Caps!
+If you love your Macs, you change their Caps!
