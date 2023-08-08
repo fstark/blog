@@ -193,7 +193,8 @@ header {
 .postlist-item:before {
 	display: inline-block;
 	pointer-events: none;
-	content: "" counter(start-from, decimal-leading-zero) ". ";
+    /* Fred: removed list counter */
+    /* content: "" counter(start-from, decimal-leading-zero) ". "; */
 	line-height: 100%;
 	text-align: right;
 	margin-left: -1.5rem;
@@ -205,6 +206,7 @@ header {
 }
 .postlist-date {
 	word-spacing: -0.5px;
+	padding-left: .75em;
 }
 .postlist-link {
 	font-size: 1.1875em; /* 19px /16 */

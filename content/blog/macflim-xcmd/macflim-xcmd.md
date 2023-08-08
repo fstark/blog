@@ -1,8 +1,10 @@
 ---
-title: Using Macflim with HyperCard
+title: Flims in HyperCard!
 description: Annoncement of MacFlim XCMD
 date: 2023-08-07
 order: 1
+draft: true
+eleventyExcludeFromCollections: true
 tags:
   - macflim
   - mac
@@ -12,15 +14,15 @@ A couple of months ago, a macflim user reached to me to ask for a way to use mac
 
 ## So, what is an HyperCard?
 
-HyperCard is a program written by Bill Atkinson in the mid 80s, that would let end-users create multimedia programs (called "stacks"). It was revolutionary at the time, and in many ways still is. Unfortunately, it did not support network access, and was not an open format. If it had been, we could be all browsing the world-wide-stack today...
+[HyperCard](https://en.wikipedia.org/wiki/HyperCard) is a program written by Bill Atkinson in the mid 80s, that would let end-users create multimedia programs (called "stacks"). It was revolutionary at the time, and in many ways still is. Unfortunately, it did not support network access, and was not an open format. If it had been, we could be all browsing the world-wide-stack today...
 
 {% image "img/hypercard-home.png", "Hypercard Home" %}
 
-Hypercard was used to create all sort of interactive programs and games. A notable HyperCard software was the original version of the video game Myst.
+Hypercard was used to create all sort of interactive programs and games. A notable HyperCard software was the original version of the [video game Myst](https://en.wikipedia.org/wiki/Myst).
 
 ## Why MacFlim?
 
-While it was possible to create stack with Apple Quicktime, such technology was not available for low end macintoshes, and in general not Black & White friendly. So, facing with the huge demand of a single user, it was a logical step for me to spend a hundred or so hours to implement this feature. If everything goers according to plan, I can bank to probably a couple of users at the end of 2024...
+While it was possible to create stacks with Apple Quicktime, such technology was not available for low end macintoshes, and in general not Black & White friendly. So, facing with the huge demand of a single user, it was a logical step for me to spend a hundred or so hours to implement this feature. If everything goers according to plan, I can bank to probably a couple of users at the end of 2024...
 
 ## MacFlim changes
 
@@ -60,7 +62,9 @@ So, there is now an option to specify that a flim will start by blitting the ini
 
 {% image "public/Models.gif", "A cinemagraph" %}
 
-To get proper cinemagraphs, the flim needs to end on exactly the same image it started, to enable a seamless looping.
+If we want to be able to continue playing from the begining, without any intervening "refresh", the flim needs to end pixel-precise with the same image it started on, because macflim only encodes differences between successive images. So, cinemagraphs are another reason why we can't start from black.
+
+``flimmaker`` now has an option to append the first frame at the end of the flim until the encoding stabilize to a pixel-perfect representation.
 
 ## Work
 

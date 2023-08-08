@@ -3,6 +3,8 @@ title: Making a Blog using 11ty (Eleventy)
 description: Woes of blog making
 date: 2023-08-07
 order: 0
+draft: true
+eleventyExcludeFromCollections: true
 tags:
   - blog
   - rant
