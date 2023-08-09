@@ -75,7 +75,7 @@ There no assembly language on the PB-700, everything needs to be done in basic, 
 
 Fortunately, our needs are pretty limited: we need to send a short amount of data, and get back a large amount.
 
-Writing data to the cassette port can be done using the ``PUT`` basic command, that writes variable to the cassette. It is slow. First, because the cassette encoding is slow (300 bauds), but mostly because it writes a header, some metadata, another header, the data you want to write, and closes the communication with a trailer. Writing 20 bytes of data to the cassette takes easily 20 seconds.
+Writing data to the cassette port can be done using the ``PUT`` basic command, that writes variable to the cassette. It is slow. First, because the cassette encoding is slow (300 bauds), but mostly because it writes a header, some metadata, another header, the data you want to write, and closes the communication with a trailer. Writing 20 bytes of data to the cassette takes around 12 seconds.
 
 As we need to read large amount of data, I'm gonna directly load a BASIC program that draws the result. Fortunately, the PB-700 BASIC have the ``CHAIN`` commands, that loads a program from tape and directly executes it. This is how our midjourney program will get a different program for each drawing. Or sets of programs, as a drawing may require more than one.
 
