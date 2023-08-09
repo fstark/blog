@@ -13,15 +13,15 @@ tags:
 
 ## The Story
 
-The Casio PB-700 is a fascinating little device from 1983. It has a sleek 120x32 pixels screen, and a whoping 4Kb of RAM, extensible to 16, using 3 modules made of unobtainium.
+The Casio PB-700 is a fascinating little device from 1983. It has a sleek 120x32 pixels screen, and a whoping 4Kb of RAM, extensible to 16K, using 3 modules made of unobtainium.
 
-It has a companion printer, the FA-10, which is actually a 4 colors pen-plotter, found in a few machines of the era (like in the [Sharp PC-1500](https://en.wikipedia.org/wiki/Sharp_PC-1500), in a smaller version, or [as an accessory to the TRS-80](https://colorcomputerarchive.com/repo/Documents/Manuals/Hardware/CGP-115%20(Tandy).pdf), or the [Sharp MZ-700](https://original.sharpmz.org/mz-700/useplot.htm))
+It has a companion printer, the FA-10, which is actually a 4 colors pen-plotter, found in a few machines of the era (like in the [Sharp PC-1500](https://en.wikipedia.org/wiki/Sharp_PC-1500), in a smaller version, or [as an accessory to the TRS-80](https://colorcomputerarchive.com/repo/Documents/Manuals/Hardware/CGP-115%20(Tandy).pdf), or [some versions of the Sharp MZ-700](https://original.sharpmz.org/mz-700/useplot.htm))
 
 Unfortunately, mine isn't fully working, and I only managed to get one color, so PloTTY is a monochrome program.
 
 Anyway, this thing is the cutest, in particular with its incredibly tiny associated tape recorder, the CM-1 (under the paper in the intro picture).
 
-It is a shame that there are no real impressive demos of what that machine can do, and I needed to find something fun, interesting, modern and useless to do.
+It is a shame that there are no real impressive demos of what that machine and plotter can do, and I needed to find something fun, interesting, modern and useless to do.
 
 However, I can't draw, but I can code. And coding is done to make computer do what we can't, right?
 
@@ -41,17 +41,23 @@ Well there are cassette ports. So, *technically*, we can communicate. We'll just
 
 ## High-level view of the process
 
-<ol>
-<li>The PB-700 is connected to the Linux box with both the IN and OUT audio lines.</li>
-<li>The user type ``CHAIN`` on the PB-700 to load and execute the basic program on tape.</li>
-<li>The linux server send the initial BASIC program and wait for an answer from the PB-700.</li>
-<li>The PB-700 prompt the user for the image he wants, and writes its to the tape. It then executes another ``CHAIN``, waiting for the next BASIC program to execute.</li>
-<li>The linux server gets audio data as a wav file and use the ``casutil`` tools to extract the information sent.</li>
-<li>This information is transformed into a midjourney prompt, for generating an image.</li>
-<li>The resulting image is traced and a BASIC program that draws that image is generated and sent to the PB-700.</li>
-<li>The PB-700 gets the basic program and plot the image.</li>
-<li>As the BASIC programs ends up with another ``CHAIN`` command, the whole process is repeated.</li>
-</ol>
+* The PB-700 is connected to the Linux box with both the IN and OUT audio lines.
+
+* The user type ``CHAIN`` on the PB-700 to load and execute the basic program on tape.
+
+* The linux server send the initial BASIC program and wait for an answer from the PB-700.
+
+* The PB-700 prompt the user for the image he wants, and writes its to the tape. It then executes another ``CHAIN``, waiting for the next BASIC program to execute.
+
+* The linux server gets audio data as a wav file and use the ``casutil`` tools to extract the information sent.
+
+* This information is transformed into a midjourney prompt, for generating an image.
+
+* The resulting image is traced and a BASIC program that draws that image is generated and sent to the PB-700.
+
+* The PB-700 gets the basic program and plot the image.
+
+* As the BASIC programs ends up with another ``CHAIN`` command, the whole process is repeated
 
 Easy, peasy.
 
@@ -96,19 +102,89 @@ On the linux box, we need some server software that just executes a succession o
 So, the first order of business on the server is to send the basic program:
 
 ```sh
-    echo "-- Generating plotty.bas binary file"
-    casutil/linux/bas850 -b -t7 pb-700/plotty.bas plotty.bin >> log.txt
-    echo "-- Creating plotty.wav"
-    casutil/linux/wave850 -b plotty.bin plotty.wav >> log.txt
-    echo "-- Sending plotty.wav to PB-700"
-    play plotty.wav
+echo "-- Generating plotty.bas binary file"
+casutil/linux/bas850 -b -t7 pb-700/plotty.bas plotty.bin >> log.txt
+echo "-- Creating plotty.wav"
+casutil/linux/wave850 -b plotty.bin plotty.wav >> log.txt
+echo "-- Sending plotty.wav to PB-700"
+play plotty.wav
 ```
 
 This converts the BASIC source code into a tokenzed form suitable for the PB-700 (tokenized programs are smaller, so we gain a bit of time there), the generates a ``.wav`` file and plays it on the audio output. Hopefully the PB-700 is ready exacuting ``CHAIN`` and will load and execute plotty.bas.
 
 The communication is a 300 baud one, with a header. The ``.bin`` is 224 bytes, and the total communication time is 12.712s
 
-### 
+### Waiting for a response
 
+The ``casutil`` commands work on 8 bits ``.wav`` files, so I need to use the ``record`` command to get the sound from the PB-700. Unfortunately, there is no way to make it stops when it gets a silent. Hence, I had to create my own command that waits for sound, and records until the line gets silent.
+
+A small [python command ``listen.py``](https://github.com/fstark/PloTTY/blob/main/pb-700/listen.py) had to be created for that, using the python ``pyaudio``, ``audioop`` and ``wave`` modules. Thanks ChatGPT for writing half of the code there. Unfotunately, I wasn't able to make it output 8 bits wav, so a quick ``sox`` solved that issue:
+
+```python
+# Listen and decode answer
+echo "-- Plotty.wav sent, waiting for reply"
+python pb-700/listen.py
+sox recorded_audio.wav -r 44100 -c 1 -b 8 out.wav
+casutil/linux/wav2raw -b out.wav out.bin
+```
+
+### Decoding the response
+
+The PB-700 response is stored into a binary file. As there is no way to properly decode its content, a quick ``xxd`` was used to find the offset of the content and another python command ``extract-data.py`` was created to extract the user prompt.
+
+```python
+def extract_ascii_string(filename):
+    with open(filename, 'rb') as file:
+        # Set the starting offset to 0x29
+        file.seek(0x29)
+
+        # Read bytes until the next occurrence of 0x0d
+        ascii_bytes = bytearray()
+        byte = file.read(1)
+        while byte and byte != b'\x0d':
+            ascii_bytes.append(byte[0])
+            byte = file.read(1)
+
+        # Convert the extracted bytes into an ASCII string
+        ascii_string = ascii_bytes.decode('ascii')
+
+    return ascii_string
+
+print(extract_ascii_string("out.bin"))
+```
+
+We loop until the data contains *something*, because sometimes audio interferences may get the ``listen.py`` command to record garbage.
+
+### Storing the prompt
+
+As there is no way to ask MidJourney for a single image, there are always 4 variations created. The user can specify which variation he is interested in, and is encoded in the format "PROMPT/VARIATION" (to have a single variable sent from the PB-700 and keep the binary decoding simple). Nothing that a quick ``sed`` can't fix:
+
+```sh
+VARIATION=`echo $PROMPT | sed -e 's/.*\/\([^\/\]*\)/\1/g'`
+PROMPT=`echo $PROMPT | sed -e 's/\\/[0-9]*$//g'`
+```
+
+### Calling MidJourney
+
+Now we "just" have to call the midjourney API to get an image for that prompt. This is the role of the ``midjourney/sendrequest.sh`` shell script.
+
+It would be pretty simple if midjourney had an API. But it is 2023, and not even multi-billion valuation startups are able to implement simple JSON APIs.
+
+```sh
+#!/bin/bash
+
+WINDOW_ID=`xdotool search --name "#general | Midjourney Discord"`
+
+xdotool windowactivate $WINDOW_ID
+xdotool mousemove --window $WINDOW_ID 400 1450
+xdotool click 1
+xdotool type --delay 10 "/imagine"
+sleep 1
+xdotool type --delay 10 " "
+sleep 1
+xdotool type --delay 10 "$1 black and white line art constant thickness simple children coloring book"
+sleep 1
+xdotool type "$(echo -ne '\r')"
+```
 
 {% blogimage "img/final.jpg", "Midjourney created this penguin on the pb-700" %}
