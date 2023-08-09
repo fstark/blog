@@ -56,7 +56,14 @@ module.exports = eleventyConfig => {
 			outputDir: path.join(eleventyConfig.dir.output, "img"), // Advanced usage note: `eleventyConfig.dir` works here because we’re using addPlugin.
 		});
 
-        const destfile = "img/large-"+metadata.jpeg[0].filename;
+        if (metadata.jpeg)
+            filemeta = metadata.jpeg[0];
+        else if (metadata.png)
+            filemeta = metadata.png[0];
+        else
+            console.log( metadata );
+
+        const destfile = "img/large-"+filemeta.filename;
 
         fs.copyFile( file, path.join(eleventyConfig.dir.output, destfile), (err) => {} );
         // console.log( path.join(eleventyConfig.dir.output, destfile) );
@@ -65,7 +72,7 @@ module.exports = eleventyConfig => {
         // console.log( file );
         // console.log( metadata );
         markup.push( '<figure><a href="/'+destfile+'" target="_blank"><img' );
-        markup.push( 'loading="lazy" decoding="async" src="'+metadata.jpeg[0].url+'"')
+        markup.push( 'loading="lazy" decoding="async" src="'+filemeta.url+'"')
         markup.push( '></a><figcaption>'+caption+'</figcaption></figure>' );
         return markup.join(" ");
     });

@@ -11,9 +11,11 @@ tags:
 
 {% blogimage "img/lots-of-drawings.jpg", "The power of MidJourney on your trusty Casio PB-700" %}
 
-## The Story
+## The Pitch
 
-The Casio PB-700 is a fascinating little device from 1983. It has a sleek 120x32 pixels screen, and a whoping 4Kb of RAM, extensible to 16K, using 3 modules made of unobtainium.
+The Casion PB-700 with its CA-10 is my favorite computer.
+
+It is a fascinating little device from 1983. It has a sleek 120x32 pixels screen, and a whoping 4Kb of RAM, extensible to 16K, using 3 modules made of unobtainium.
 
 It has a companion printer, the FA-10, which is actually a 4 colors pen-plotter, found in a few machines of the era (like in the [Sharp PC-1500](https://en.wikipedia.org/wiki/Sharp_PC-1500), in a smaller version, or [as an accessory to the TRS-80](https://colorcomputerarchive.com/repo/Documents/Manuals/Hardware/CGP-115%20(Tandy).pdf), or [some versions of the Sharp MZ-700](https://original.sharpmz.org/mz-700/useplot.htm))
 
@@ -33,7 +35,7 @@ Simple.
 
 ## How do we communicate?
 
-There are a few hurdles to overcome. For instance, there is there is no serial port, and no outside communication possible with the PB-700. *Or is it?*
+There are a few hurdles to overcome. For instance, there is there is no serial or parallel port, so no outside communication possible with the PB-700. *Or is it?*
 
 {% blogimage "img/port-salut.jpg", "The only I/O ports of the PB-700/FA-10 combo" %}
 
@@ -61,7 +63,11 @@ Well there are cassette ports. So, *technically*, we can communicate. We'll just
 
 Easy, peasy.
 
-Well, this is conceptually quite simple, but the implementation is riddled with unexpected roadblocks. Let's see them in order.
+Well, this is conceptually quite simple, but the architecture looks like:
+
+{% blogimage "img/architecture.png", "A simplified view of PloTTY architecture" %}
+
+As you'll see, the implementation is riddled with unexpected roadblocks. Let's see them in order.
 
 ## On the PB-700 side
 
@@ -164,11 +170,41 @@ VARIATION=`echo $PROMPT | sed -e 's/.*\/\([^\/\]*\)/\1/g'`
 PROMPT=`echo $PROMPT | sed -e 's/\\/[0-9]*$//g'`
 ```
 
+### The MidJourney prompt
+
+MidJourney generates images that are not generally suitable for tracing. Howver, by asking him nicely, we can get stuff that is pretty close. Here is the output of:
+
+``/imagine PENGUIN FROM PENGUINDRUM black and white line art constant thickness simple children coloring book``:
+
+{% blogimage "img/penguin-midjourney.png", "A reasonable set of images for tracing" %}
+
+So, it is just a matter of adding ", black and white, line art, constant thickness, simple, children coloring book" to the PB-700 acquired prompt and sending this to MidJourney to imagine.
+
+Sounds easy, right?
+
 ### Calling MidJourney
 
-Now we "just" have to call the midjourney API to get an image for that prompt. This is the role of the ``midjourney/sendrequest.sh`` shell script.
+Well, it would be pretty simple if midjourney had an API. But it is 2023, and not even multi-billion valuation startups are able to implement simple JSON APIs.
 
-It would be pretty simple if midjourney had an API. But it is 2023, and not even multi-billion valuation startups are able to implement simple JSON APIs.
+MidJourney *only API is Discord*. You have to enter the command in a discord channel for MidJourney to answer. Read this again.
+
+So, sure, it is easy, there is an API to send messages to discord channels, right? Right?
+
+Well, not exactly. The only thing you can do is create a bot to ask a question in a channel. So I have to create a private discord channel and use a bot to tell midjourney to generate an image.
+
+So I did just that.
+
+And it doesn't work.
+
+{% blogimage "img/you-didnt-think-it-would-be-that-easy.jpg", "A developer interacting with MidJourney and Discord" %}
+
+You see, there are companies out there which only business model is to provide a sane API to midjourney. [*For $40 a month*](https://www.thenextleg.io/).
+
+Because, you see, the MidJourney bot will not reply to requests sent by bots.
+
+Some people just hacked and used the underlying Discord JSON API, but this isn't allowed by the TOS, and can lead to *termination of accounts*.
+
+Here I present you my solution, the mighty ``midjourney/sendrequest.sh`` shell script. You're free to wrap it into a REST API and sell it $39 a month.
 
 ```sh
 #!/bin/bash
@@ -187,4 +223,110 @@ sleep 1
 xdotool type "$(echo -ne '\r')"
 ```
 
-{% blogimage "img/final.jpg", "Midjourney created this penguin on the pb-700" %}
+Yes, this uses X11 to simulate user input in a running Discord client. I have to get the discord client on the right channel, or I span random conversations with ``/imagine commands``. And the window have to be full screen height. And there are delays because sometimes Discord needs the user to pause after the ``/imagine`` or it will not recognize it as a command. And that pause needs to be long enough, because there seems to be some random network calls at this moment.
+
+Anyway, as kuldgy as it looks, this *will* get MidJourney to generate out drawing.
+
+In the Discord channel...
+
+### Retrieving the image
+
+Retreiving the image was not too difficult, using bits of the failed code of the previous section: I have a Discord bot that connects to a channel and downloads the latest image generated. It is built by trial and errors, and [you can find it in the github](https://github.com/fstark/PloTTY/blob/main/midjourney/midjourney-bot.py).
+
+{% blogimage "img/many-bothan-died.jpg", "But this is a sacrifice I am ready to make" %}
+
+Fundamentally, the bot in itself is pretty simple, configuring its access on the Discord website was an exercice in frustration, but it obiously just connects to the channel ``1129449736882114674``, recovers the last message and saves it in a local file.
+
+Oh, and don't enter anything that the AI would find sucpicious. A prompt of *"PHILIP K DICK black and white line art constant thickness simple children coloring book"* would trigger the bot, which would remove the message, check with their "more advanced AI" that it is a valid request and repost a different answer, which will confuse the bot.
+
+Anyway, at the end, we get this running.
+
+### Tracing the image
+
+When I started the project, I naively thought it would be the hardest part. It definitely wasn't.
+
+The heart of it is a ``python`` script, [called ``trace.py``](https://github.com/fstark/PloTTY/blob/main/trace.py)
+
+I'll do a separate blog post to go through the process, but fundamentally, it takes an image, a corner to extract, and generates a JSON with coordinates list.
+
+{% blogimage "img/source.png", "The source image..." %}
+
+{% blogimage "img/motions.png", "...is turned into this" %}
+
+The output of the script:
+
+```json
+[[[30.8, 62.4], [31.0, 62.4]],
+ [[32.2, 62.4], [31.2, 62.2], [31.2, 61.0], [30.8, 61.0], [30.8, 60.0], [30.4, 60.0], [30.8, 59.2], [31.4, 60.8], [33.2, 62.2], [32.2, 62.6]],
+ [[33.6, 63.0], [33.2, 63.0], [33.2, 62.4], [33.8, 62.4]],
+ [[34.6, 62.8], [33.8, 62.6], [33.8, 63.2], [37.4, 62.6], [39.4, 60.8], [39.6, 59.6], [40.2, 59.2], [40.2, 55.8], [39.0, 53.6], [38.0, 53.4], [37.0, 52.4], [34.0, 52.4], [33.2, 52.8], [31.0, 55.2], [30.4, 57.4], [30.8, 59.0], [30.4, 58.8]],
+ [[38.4, 59.8], [36.8, 59.8], [36.2, 59.2], [36.0, 57.6], [36.6, 56.8], [38.8, 56.8], [39.2, 59.2]],
+```
+*a little more than a hundred lines skipped*
+```json
+ [[64.4, 18.8], [64.0, 18.2], [63.6, 18.8]],
+ [[63.8, 18.0], [63.4, 17.0]],
+ [[79.6, 27.6], [79.6, 27.8]],
+ [[14.8, 43.2]],
+ [[13.8, 43.2], [13.8, 42.8]]]
+```
+
+### Generating the BASIC program
+
+Those coordinates can then be turned into a basic program for the PB-700 by the [``json2basic.py`` python script](https://github.com/fstark/PloTTY/blob/main/pb-700/json2basic.py)
+
+(TODO: EXPLAIN THE BASIC PLOTTER COMMANDS)
+
+```
+1CLS:PRINT"Lines 1-93/93"
+2LPRINT CHR$(28);CHR$(37):LPRINT"O0,-96"
+3LPRINT"D30.8,62.4,31.6,61.8"
+4LPRINT"D38.0,60.2,36.8,61.0,35.0,60.8,33.4,59.6,32.6,58.0,32.8,56.0"
+5LPRINT"D32.8,56.0,34.4,54.0,35.8,53.4,37.4,53.6,37.6,53.2"
+6LPRINT"D37.8,53.6,37.4,53.8"
+7LPRINT"D39.8,59.0,40.4,58.2,40.0,55.4,37.4,52.6,34.0,52.4,31.6,54.2"
+8LPRINT"D31.6,54.2,30.6,56.4,30.4,58.6,32.0,62.0,34.4,63.0,37.4,62.6"
+9LPRINT"D37.4,62.6,39.4,60.8,39.2,57.0,38.4,56.4,37.0,56.4,36.0,57.4"
+10LPRINT"D36.0,57.4,36.2,59.4,38.4,60.0,39.4,59.4"
+```
+*and a lot of lines, until*
+```
+135LPRINT"D44.8,50.4,46.8,48.8,48.4,49.4,49.2,50.2,49.8,52.0,51.0,52.6"
+136LPRINT"D51.0,52.6,51.2,53.2,49.2,54.6,45.6,54.8,43.8,54.2,42.6,53.0"
+137LPRINT"D42.6,53.0,44.4,51.8"
+138LPRINT"D15.0,43.0,14.8,43.4"
+139LPRINT"D14.2,43.6,13.8,42.8"
+140LPRINT"D79.6,27.6,80.0,28.4"
+997LPRINT"M0,-20"
+998PRINT"--Finished --":A$="NEXT":PUTA$
+999PRINT"Loading PloTTY...":CHAIN
+```
+
+As you can see, the programs ends up byt ``PUT``ing the string "NEXT" back to the Linux and then executing a ``CHAIN`` command, passing the control to the *next* BASIC program sent by the Linux host.
+
+If the image is too large for my PB-700 (which has 12K of RAM! Yes, I have *2* OR-4 4K extensions!), then it will generate a set of programs, which will automatically chain into each other.
+
+### Sending the program to the PB-700 for execution
+
+The overall ``plotty.sh`` shell script will then transform each of those BASIC programs into a tokenized form for the PB-700 BASIC, generate a ``.wav`` file, and send it to the PB-700, which has been waiting all this time.
+
+```sh
+echo "-- Transforming [$f] into binary"
+casutil/linux/bas850 -b -t7 "$f" prog.bin >> log.txt
+echo "-- Generating wav for [$f]"
+casutil/linux/wave850 -b prog.bin prog.wav >> log.txt
+echo "-- Sending [$f] to PB-700"
+play prog.wav
+```
+
+Sending the program takes around 8 minutes. A breeze!
+
+During all this time, the PB-700 has been waiting in its ``CHAIN`` command. It will load the program and execute it, finally executing the drawing on the FA-10.
+
+{% blogimage "img/final.jpg", "This is what will be drawn by the PB-700" %}
+
+At the end of the program, the PB-700 will ``PUT`` the string "NEXT". The ``plotty.sh`` shell script will read it and know that the PB-700 is ready to ``CHAIN`` into another program. It will then send either the next part of the drawing, or go back to sending the orginal ``plotty.bas`` program, letting the user select a new drawing.
+
+## Conclusion
+
+That was a fun ride, and I finally got my plotter to generate interesting images. It is a bit sad to see the state of modern computing and the pile of hack that are needed to integrate properly with midjourney. The whole thing is very fragile, and dependent on the behavior of Discord and MidJourney, both from a technical standpoint, and a functional one. I can guarante that, in 40 years, nor Discord nor MidJourney will still be here, nor that such prompt will still generate a suitable image. It will break way sooner. But my trusty PB-700 will continue chugging beautiful images on its cute printer, and that all that matter.
