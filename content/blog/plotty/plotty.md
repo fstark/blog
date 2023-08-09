@@ -1,5 +1,5 @@
 ---
-title: Midjourney on a 40 year old laptop
+title: Midjourney on the cutest 40 year old laptop ever
 description: Drawing with the PB-700 internal plotter
 date: 2023-08-08
 order: 1
