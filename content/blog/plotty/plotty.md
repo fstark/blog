@@ -247,7 +247,7 @@ When I started the project, I naively thought it would be the hardest part. It d
 
 The heart of it is a ``python`` script, [called ``trace.py``](https://github.com/fstark/PloTTY/blob/main/trace.py)
 
-I'll do a separate blog post to go through the process, but fundamentally, it takes an image, a corner to extract, and generates a JSON with coordinates list.
+I'll do a separate blog post to go through the process, but fundamentally, it takes an image, a corner to extract (because MidJouney insists in generating 4 images), and generates a JSON with coordinates list.
 
 {% blogimage "img/source.png", "The source image..." %}
 
