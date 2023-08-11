@@ -304,9 +304,16 @@ Those coordinates can then be turned into a basic program for the PB-700 by the 
 
 The code is straightforward: ``LPRINT CHR$(28);CHR$(37)`` puts the plotter in graphic mode. ``LPRINT"O0,-96"`` sets the origin to around 9.6 centimeters below the current plotter head. ``LPRINT"D30.8,62.4,31.6,61.8"`` draws a line from 30.8,62.4 to 21.6,61.8. The 80's were a much simpler time...
 
-Also, the programs ends up byt ``PUT``ing the string "NEXT" back to the Linux and then executing a ``CHAIN`` command, passing the control to the *next* BASIC program sent by the Linux host.
+Also, the programs ends up by ``PUT``ing the string "NEXT" back to the Linux and then executing a ``CHAIN`` command, passing the control to the *next* BASIC program sent by the Linux host.
 
 If the image is too large for my PB-700 (which has 12K of RAM! Yes, I have *2* OR-4 4K extensions!), then it will generate a set of programs, which will automatically chain into each other.
+
+In the ``plotty.sh`` shell script, there is a ``--size 8000`` parameter to the invokation. This will limit the size of the generated programs so they easily fit into a 12KB PB-700. It can be made smaller to targeta machine with 4KB of ram, or larger for a mythical fully loaded PB-700.
+
+```BASIC
+echo -n "-- Generating BASIC programs:"
+python pb-700/json2basic.py --size 8000 < prog.json
+```
 
 ### Sending the program to the PB-700 for execution
 
@@ -333,9 +340,15 @@ At the end of the program, the PB-700 will ``PUT`` the string "NEXT". The ``plot
 
 ## How do I run it myself?
 
-Well, if you have a linux host, you can [head to the repository](https://github.com/fstark/PloTTY). You will also need the ``casutils`` commands, and ``sox``. You will need a paying MidJourney account, and to set a discord bot. You'll need to store you Discord token in the file ``midjourney/midjourney-bot-token``.
+Well, if you have the PB-700 and tyhe CM-1, a linux host and two audio cables, you can [head to the repository](https://github.com/fstark/PloTTY). You will also need a link to the [``casutils``](http://www.mvcsys.de/doc/casioutil.html) commands at the top of Plotty working directory, and an install of ``sox``.
 
-If you don't have a MidJourney account, don't want to waste your time configuring these thing or are from the future where midjourney and discord works differently, there is a caching mecanism: if your prompt correspond to the name of a file in the ``cache`` directory, the whole discord/midjourney process will be sikpped. So ``CAT``, for instance, will produce a nice cat image.
+There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt that have a matching JPG image in the ``cache`` directory will skip the whole discord/midjourney process.[Quite a few are provided in the github](https://github.com/fstark/PloTTY/tree/main/cache), so you can easily invoke Cthulhu, Darth Vador or Mickey Mouse. 
+
+And typing ``CAT``, variation ``1`` on your PB-700, will always produce the following cat image:
+
+{% blogimage "img/cat.png", "This is the first image plotty created" %}
+
+If you want to get the real midjourney connection working, you're on your own. You need a paying midjourney account, you need to change the ``midjourney/sendrequest.sh`` code to type into the right window, and you'll need to set a discord bot (store the token in the file ``midjourney/midjourney-bot-token``).
 
 ## Conclusion
 
