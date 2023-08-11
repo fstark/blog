@@ -86,7 +86,13 @@ module.exports = eleventyConfig => {
 
     return '<video controls width="640"><source src="/'+src+'" type="video/mp4">Your browser does not support the video tag.</video>';
     } );
-};
+
+    eleventyConfig.addAsyncShortcode("twitter", async function imageShortcode( handle ) {
+      console.log( handle );
+      return '<a href="https://www.twitter.com/'+handle+'" target="_blank">'+handle+'</a>';
+    });
+
+  };
 
 /*
 function generateHTML(metadata, attributes = {}, options = {}) {

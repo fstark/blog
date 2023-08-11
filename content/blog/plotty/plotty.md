@@ -31,6 +31,8 @@ However, I can't draw, but I can code. And coding is done to make computer do wh
 
 So, connecting the PB-700 to midjourney is the obvious idea. A linux box will do the midjourney request, some image manipulation and serve the result to the PB-700.
 
+Thanks to a sugestion of {% twitter "@Altomare3" %} the name of the software will be PloTTY, to emphasis the fact that, althought it does plot drawings, it has nothing to do with TTYs.
+
 Simple.
 
 ## How do we communicate?
@@ -346,7 +348,7 @@ There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt th
 
 And typing ``CAT``, variation ``1`` on your PB-700, will always produce the following cat image:
 
-{% blogimage "img/cat.png", "This is the first image plotty created" %}
+{% blogimage "img/cat.png", "This was the first image plotty created, hence PloTTY for French 'A plotty Chat'" %}
 
 If you want to get the real midjourney connection working, you're on your own. You need a paying midjourney account, you need to change the ``midjourney/sendrequest.sh`` code to type into the right window, and you'll need to set a discord bot (store the token in the file ``midjourney/midjourney-bot-token``).
 
