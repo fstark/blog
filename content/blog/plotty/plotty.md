@@ -350,7 +350,7 @@ And typing ``CAT``, variation ``1`` on your PB-700, will always produce the foll
 
 {% blogimage "img/cat.png", "This was the first image plotty created, hence the official explanation is that PloTTY stands for French 'A plotty chat'" %}
 
-If you want to get the real midjourney connection working, you'll need a paying midjourney account, you'll need to change the ``midjourney/sendrequest.sh`` code to type into the right window, and you'll need to set a discord bot (store the token in the file ``midjourney/midjourney-bot-token``) and probably change the .
+If you want to get the real midjourney connection working, you'll need a paying midjourney account, you'll need to change the ``midjourney/sendrequest.sh`` code to type into the right window, and you'll need to set a discord bot (store the token in the file ``midjourney/midjourney-bot-token``) and probably change the channel number from 1129449736882114674 in ``midjourney/midjourney-bot.py``...
 
 ## Conclusion
 
