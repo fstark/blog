@@ -1,12 +1,12 @@
 ---
 title: Midjourney on the cutest 40 year old laptop ever
-description: Drawing with the PB-700 internal plotter
+description: Drawing midjouney images on the Casio PB-700 internal plotter
 date: 2023-08-08
 order: 1
 eleventyExcludeFromCollections: false
 tags:
   - coding
-  - pb-700
+  - PB-700
 ---
 
 {% blogimage "img/lots-of-drawings.jpg", "The power of MidJourney on your trusty Casio PB-700" %}
