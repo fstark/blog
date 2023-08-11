@@ -31,7 +31,7 @@ However, I can't draw, but I can code. And coding is done to make computer do wh
 
 So, connecting the PB-700 to midjourney is the obvious idea. A linux box will do the midjourney request, some image manipulation and serve the result to the PB-700.
 
-Thanks to a sugestion of {% twitter "@Altomare3" %} the name of the software will be PloTTY, to emphasis the fact that, althought it does plot drawings, it has nothing to do with TTYs.
+Thanks to a sugestion of {% mastodon "oldbytes.space", "@Altomare" %} the name of the software will be PloTTY, to emphasis the fact that, althought it does plot drawings, it has nothing to do with TTYs.
 
 Simple.
 
@@ -348,9 +348,9 @@ There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt th
 
 And typing ``CAT``, variation ``1`` on your PB-700, will always produce the following cat image:
 
-{% blogimage "img/cat.png", "This was the first image plotty created, hence PloTTY for French 'A plotty Chat'" %}
+{% blogimage "img/cat.png", "This was the first image plotty created, hence the official explanation is that PloTTY stands for French 'A plotty chat'" %}
 
-If you want to get the real midjourney connection working, you're on your own. You need a paying midjourney account, you need to change the ``midjourney/sendrequest.sh`` code to type into the right window, and you'll need to set a discord bot (store the token in the file ``midjourney/midjourney-bot-token``).
+If you want to get the real midjourney connection working, you'll need a paying midjourney account, you'll need to change the ``midjourney/sendrequest.sh`` code to type into the right window, and you'll need to set a discord bot (store the token in the file ``midjourney/midjourney-bot-token``) and probably change the .
 
 ## Conclusion
 
@@ -361,10 +361,15 @@ That was a fun ride, and I finally got my plotter to generate interesting images
 [The github repository will all the code and sample images](https://github.com/fstark/PloTTY)
 
 As there is no Wikipedia page for the PB-700 (what a shame), here are a few links:
+
 [The Casio PB-700 specifications](http://pocket.free.fr/html/casio/pb-700_e.html)
-[The eliusive OR-4](http://pocket.free.fr/html/casio/or-4_e.html)
+
+[The elusive OR-4](http://pocket.free.fr/html/casio/or-4_e.html)
+
 [The Casio FA-10 plotter](http://pocket.free.fr/html/casio/fa-10_e.html)
+
 [The oh-so-cute CM-1 Tape recorder](http://pocket.free.fr/html/casio/cm-1_e.html)
+
 [Images of the whole PB-700/FA-10/CM-1 combo](http://pocket.free.fr/html/casio/extra/pb-700_system_e.html)
 
 [Marcus von Cube's Casio I/O Util library](http://www.mvcsys.de/doc/casioutil.html)
