@@ -3,7 +3,7 @@ title: Vectorizing a Bitmap Image
 description: Vectorizing a bitmap image
 date: 2023-08-08
 order: 1
-eleventyExcludeFromCollections: false
+eleventyExcludeFromCollections: true
 tags:
   - coding
   - algorithmics
