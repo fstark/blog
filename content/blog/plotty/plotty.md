@@ -79,7 +79,7 @@ Fortunately, our needs are pretty limited: we need to send a short amount of dat
 
 Writing data to the cassette port can be done using the BASIC ``PUT`` command, that writes variables to the cassette. It is slow. First, because the cassette encoding is slow (300 bauds), but mostly because it writes a header, some metadata, another header, the data you want to write, and closes the communication with a trailer. Writing 20 bytes of data to the cassette takes around 12 seconds.
 
-As we need to read large amount of data, I'm gonna directly load a BASIC program that draws the result. Fortunately, the PB-700 BASIC have the ``CHAIN`` commands, that loads a program from tape and directly executes it. This is how our midjourney program will get a different program for each drawing. Or sets of programs, as a drawing may require more than one.
+As we need to read large amount of data, I'm gonna directly load a BASIC program that draws the result. Fortunately, the PB-700 BASIC have the ``CHAIN`` command, that loads a program from tape and directly executes it. This is how our midjourney program will get a different program for each drawing. Or sets of programs, as a drawing may require more than one.
 
 Here is the full source code of midjourney for PB-700:
 
@@ -165,7 +165,7 @@ We loop until the data contains *something*, because sometimes audio interferenc
 
 ### Storing the prompt
 
-As there is no way to ask MidJourney for a single image, there are always 4 variations created. The user can specify which variation he is interested in, and is encoded in the format "PROMPT/VARIATION" (to have a single variable sent from the PB-700 and keep the binary decoding simple). Nothing that a quick ``sed`` can't fix:
+As there is no way to ask MidJourney for a single image, there are always 4 variations created. The user can specify which variation he is interested in, and is encoded in the format "PROMPT/VARIATION" (to have a single variable sent from the PB-700 and keep the binary decoding simple). Small tip: using "0" as a variation will render the full image. Anyway, nothing that a quick ``sed`` can't fix:
 
 ```sh
 VARIATION=`echo $PROMPT | sed -e 's/.*\/\([^\/\]*\)/\1/g'`
@@ -178,9 +178,9 @@ MidJourney generates images that are not generally suitable for tracing. Howver,
 
 ``/imagine PENGUIN FROM PENGUINDRUM black and white line art constant thickness simple children coloring book``:
 
-{% blogimage "img/penguin-midjourney.png", "A reasonable set of images for tracing" %}
+{% blogimage "img/penguin-midjourney.png", "A panda bear may have eaten a Penguin" %}
 
-So, it is just a matter of adding " black and white line art constant thickness simple children coloring book" to the PB-700 acquired prompt and sending this to MidJourney to imagine.
+So, it is just a matter of adding " black and white line art constant thickness simple children coloring book" to the PB-700 acquired prompt and sending this to MidJourney to imagine. Sure, the resulting "children coloring book" images have a tendency to contain a lot of cute flowerly imagery, but I'll say it is a plus.
 
 Sounds easy, right?
 
@@ -241,9 +241,9 @@ Fundamentally, the bot in itself is pretty simple, configuring its access on the
 
 Note: the bot's token is stored in the non-commited file ``midjourney/midjourney-bot-token``.
 
-Oh, and don't enter anything that the AI would find sucpicious. A prompt of *"PHILIP K DICK black and white line art constant thickness simple children coloring book"* would trigger the bot, because, you know, *DICK*, and MidJourney will then decide to respond with a *private* message, which obviously my message capture bot won't get. So be it.
+Oh, and don't enter anything that the AI would find sucpicious. A prompt of *"PHILIP K DICK black and white line art constant thickness simple children coloring book"* would not trigger the image capture bot, because, you know, *DICK*, and MidJourney will then decide to respond with a *private* message, which obviously will get lost. So be it.
 
-Anyway, at the end, we get this running.
+Anyway, at the end, I got this running.
 
 ### Tracing the image
 
@@ -279,7 +279,7 @@ The output of the script:
 
 Those coordinates can then be turned into a basic program for the PB-700 by the [``json2basic.py`` python script](https://github.com/fstark/PloTTY/blob/main/pb-700/json2basic.py)
 
-```
+```BASIC
 1CLS:PRINT"Lines 1-93/93"
 2LPRINT CHR$(28);CHR$(37):LPRINT"O0,-96"
 3LPRINT"D30.8,62.4,31.6,61.8"
@@ -292,7 +292,7 @@ Those coordinates can then be turned into a basic program for the PB-700 by the 
 10LPRINT"D36.0,57.4,36.2,59.4,38.4,60.0,39.4,59.4"
 ```
 *and a lot of lines, until*
-```
+```BASIC
 135LPRINT"D44.8,50.4,46.8,48.8,48.4,49.4,49.2,50.2,49.8,52.0,51.0,52.6"
 136LPRINT"D51.0,52.6,51.2,53.2,49.2,54.6,45.6,54.8,43.8,54.2,42.6,53.0"
 137LPRINT"D42.6,53.0,44.4,51.8"
@@ -310,7 +310,7 @@ Also, the programs ends up by ``PUT``ing the string "NEXT" back to the Linux and
 
 If the image is too large for my PB-700 (which has 12K of RAM! Yes, I have *2* OR-4 4K extensions!), then it will generate a set of programs, which will automatically chain into each other.
 
-In the ``plotty.sh`` shell script, there is a ``--size 8000`` parameter to the invokation. This will limit the size of the generated programs so they easily fit into a 12KB PB-700. It can be made smaller to targeta machine with 4KB of ram, or larger for a mythical fully loaded PB-700.
+In the ``plotty.sh`` shell script, there is a ``--size 8000`` parameter to the invokation. This will limit the size of the generated programs so they easily fit into a 12KB PB-700. It can be made smaller to target a machine with 4KB of ram, or larger for the mythical fully loaded PB-700.
 
 ```BASIC
 echo -n "-- Generating BASIC programs:"
@@ -334,7 +334,7 @@ Sending the program takes around 5 to 6 minutes. A breeze!
 
 During all this time, the PB-700 has been waiting in its ``CHAIN`` command. It will load the program and execute it, finally executing the drawing on the FA-10.
 
-Oh, and make sure you have disabled the notifications from your discord client, because if anyone writes anything, *it will be sent to the PB-700*, breaking the whole process. Lovely.
+Oh, and make sure you have disabled the notifications from your discord client, because if anything happens, *the notification sound will helpfully get mixed in the data and sent to the PB-700*, breaking the whole process. Lovely.
 
 {% blogimage "img/final.jpg", "This is what will be drawn by the PB-700" %}
 
@@ -342,9 +342,9 @@ At the end of the program, the PB-700 will ``PUT`` the string "NEXT". The ``plot
 
 ## How do I run it myself?
 
-Well, if you have the PB-700 and tyhe CM-1, a linux host and two audio cables, you can [head to the repository](https://github.com/fstark/PloTTY). You will also need a link to the [``casutils``](http://www.mvcsys.de/doc/casioutil.html) commands at the top of Plotty working directory, and an install of ``sox``.
+Well, if you have the PB-700 and the CM-1, a linux host and two audio cables, you can [head to the repository](https://github.com/fstark/PloTTY). You will also need a link to the [``casutils``](http://www.mvcsys.de/doc/casioutil.html) commands at the top of ``plotty.sh`` working directory, and an install of ``sox``.
 
-There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt that have a matching JPG image in the ``cache`` directory will skip the whole discord/midjourney process.[Quite a few are provided in the github](https://github.com/fstark/PloTTY/tree/main/cache), so you can easily invoke Cthulhu, Darth Vador or Mickey Mouse. 
+There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt that have a matching JPG image in the ``cache`` directory will skip the whole discord/midjourney process. [Quite a few are provided in the github](https://github.com/fstark/PloTTY/tree/main/cache), so you can easily invoke Cthulhu, Darth Vador or Mickey Mouse. 
 
 And typing ``CAT``, variation ``1`` on your PB-700, will always produce the following cat image:
 
@@ -354,7 +354,7 @@ If you want to get the real midjourney connection working, you'll need a paying 
 
 ## Conclusion
 
-That was a fun ride, and I finally got my plotter to generate interesting images. It is a bit sad to see the state of modern computing and the pile of hack that are needed to integrate properly with midjourney. The whole thing is very fragile, and dependent on the behavior of Discord and MidJourney, both from a technical standpoint, and a functional one. I can guarante that, in 40 years, nor Discord nor MidJourney will still be here, nor that such prompt will still generate a suitable image. It will break way sooner. But my trusty PB-700 will continue chugging beautiful images on its cute printer, and that all that matter.
+That was a fun ride, and I finally got my plotter to generate interesting images. It is a bit sad to see the state of modern computing and the pile of hack that are needed to integrate properly with midjourney. The whole thing is very fragile, and dependent on the behavior of Discord and MidJourney, both from a technical standpoint, and a functional one. I can guarante that, in 40 years, nor Discord nor MidJourney will still be here, nor that such prompt will still generate a suitable image. It will break way sooner. But my trusty PB-700 will continue chugging beautiful images on its cute printer, and that all that matters.
 
 ## Links
 
