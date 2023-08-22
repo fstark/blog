@@ -9,7 +9,7 @@ tags:
   - mac
 ---
 
-I stumbled upon an SE/30 being sold at an incredibly low price because it wasn't working. Despite already having a few of these that I hold dear, I couldn't resist buying it with the intention of trying to fix it and then passing it on to someone else.
+I stumbled upon an SE/30 being sold at an incredibly low price because it wasn't working. Despite already having a few of these that I hold dear, I couldn't resist buying it with the intention of trying to fix it and then passing it on to someone else. After all, the SE/30 is the best mac, by far the fastest compact mac. And the mac for which I originally created [MacFlim](http://www.macflim.com/macflim2). To be honest, the SE/30 is my favorite computer.
 
 ## External Examination
 
