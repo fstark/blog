@@ -1,3 +1,5 @@
-#!/bin/sh
+#!/bin/sh -e
 
-scp -r _site/* fred@www.stark.fr:/var/www/html
+npx @11ty/eleventy
+rsync -avz --delete _site/ fred@www.stark.fr:/var/www/html
+
