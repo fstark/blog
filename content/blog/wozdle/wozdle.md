@@ -10,17 +10,17 @@ tags:
   - wozdle
 ---
 
-I must admit I wasn't such a fan of the Apple1. But now that I have one, it is my favorite computer.
+I recently got an apple 1, and it quicly became my favorite computer.
 
-Started probably 6 months ago, when SiliconInsider started to build a handful and I could get one, so I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
+Started probably 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful and I could get one, so I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
 
-It is as close to the original as possible, using the same components, often from the same time period. For all matter, I *have an Apple 1*, it was just built 47 years later. It may not be exactly true, but it is close enough for me.
+It is as close to the original as possible, using the same components, often from the same time period. For all matter, I *have an Apple 1*, it was just built 47 years later. It may not be exactly true, but it is close enough for me. Thanks Woz.
 
 Frankly, the look of the machine is sick.
 
-Silicon is building a ROM for it, so we started scouring the internets for software, but, to be honest, I found the result to be quite underwhelming. There is the 30th anniversary demo, that displays Woz, Jobs, but not much more in term of "interesting" software. The total machine language games and demos is totalling 150Kb...
+So, Antoine is also building a ROM for it, and we started scouring the internets for software, but, to be honest, I found the result to be quite underwhelming. There is the 30th anniversary demo, that displays Woz, Jobs, but not much more in term of "interesting" software. The total machine language games and demos is totalling 150Kb...
 
-So, I decided to create something to showcase the machine. A game. A *known* game, that could be used to demo the machine.
+So, I decided to stop complaining and create something to showcase the machine. A game. A *known* game, that could be used to demo the machine.
 
 I thought a bit, and I picked to create Wozdle, a perfect Wordle clone for the Apple 1.
 
@@ -30,7 +30,7 @@ But there were 3 challenges to overcome.
 
 ## The size
 
-The original Apple1 had 4K of RAM, extensible to 8K (mine), or ever 48K. Software was loaded by either inserting the cassette card and using a cassette player (extremely unreliable), or by having the software on an EEPROM (like the Integer BASIC ROM) and executing it "in place" (meaning that the code is not copied into the RAM for execution).
+The original Apple1 had 4K of RAM, extensible to 8K (like mine has), or ever 48K. Software was loaded by either inserting the cassette card and using a cassette player (extremely unreliable), or by having the software on an EEPROM (like the Integer BASIC ROM) and executing it "in place" (meaning that the code is not copied into the RAM for execution).
 
 I decided for that second solution, because the goal is for it to be present in Silicon's card. And instant loading is an interesting feature...
 
@@ -147,7 +147,7 @@ There is one fortunate positive:
 
 * Carriage return and associated scrolling is as fast as writing a character
 
-When you look at those constraints, you understand that the Apple1 screen really is a Teletype, one that shred the paper every 24 lines. What we are really doing is design Wordle for a teleptype.
+Looking at those constraints, it is clear that the Apple1 screen really is a Teletype, one that shred the paper every 24 lines. What we are really doing is design Wordle for a teleptype. Cool, maybe I can reuse the code for an ASR-33 Wordle ?
 
 {% blogimage "img/apple2-text-screen.png", "The upside is that you can use the grid that came page 16 of the original Apple2 manual" %}
 
