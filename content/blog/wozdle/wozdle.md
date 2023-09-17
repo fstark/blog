@@ -12,60 +12,60 @@ tags:
 
 I recently got an apple 1, and it quicly became my favorite computer.
 
-Started probably 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful and I could get one, so I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
+Started probably 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful and I could get one. I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
 
-It is as close to the original as possible, using the same components, often from the same time period. For all matter, I *have an Apple 1*, it was just built 47 years later. It may not be exactly true, but it is close enough for me. Thanks Woz.
+My apple1 is as close to the original as possible, uses the same components, often from the same time period. For all matter, I *have an Apple 1*, it was just built 47 years too late. It may not be exactly true, but it is close enough for me. Thanks Woz. And tanks Antoine.
 
-Frankly, the look of the machine is sick.
+And, frankly, the look of the machine is sick.
 
-So, Antoine is also building a ROM for it, and we started scouring the internets for software, but, to be honest, I found the result to be quite underwhelming. There is the 30th anniversary demo, that displays Woz, Jobs, but not much more in term of "interesting" software. The total machine language games and demos is totalling 150Kb...
+So, Antoine is also building a ROM card for it, and we started scouring the internets for software, but, to be honest, I found the result to be quite underwhelming. There is the great 30th anniversary demo, that displays Woz, Jobs, but not much more in term of "interesting" software. The total machine language games and demos is totalling 150Kb...
 
 So, I decided to stop complaining and create something to showcase the machine. A game. A *known* game, that could be used to demo the machine.
 
-I thought a bit, and I picked to create Wozdle, a perfect Wordle clone for the Apple 1.
+I picked to create Wozdle, a perfect Wordle clone for the Apple 1.
 
 It took around two days to code, and I am pretty proud of the result.
 
 But there were 3 challenges to overcome.
 
-## The size
+## 32K ought to be enough for everyone
 
 The original Apple1 had 4K of RAM, extensible to 8K (like mine has), or ever 48K. Software was loaded by either inserting the cassette card and using a cassette player (extremely unreliable), or by having the software on an EEPROM (like the Integer BASIC ROM) and executing it "in place" (meaning that the code is not copied into the RAM for execution).
 
-I decided for that second solution, because the goal is for it to be present in Silicon's card. And instant loading is an interesting feature...
+I decided for that second solution, because the goal is for it to be present in Antoine's card, which will give 32Kb of addressable ROM , so that should be plenty of space, right?
 
-The card will give 32Kb of addressable ROM (with optional page-switching, but I'd rather work with the simplest ROM), so that should be plenty of space, right?
+Let me describe the rules of Wordle: the computer choses a 5 letter word from a list of 2309 words (called *answers*).Then, the user enters a word, and the computers displays which letters are correctly or incorrectly placed, a clear inspiration from the old Mastermind game.
 
-Let me describe the rules of Wordle for you: the computer choses a 5 letter word from a list of 2309 words (called *answers*).Then, the user enters a word, and the computers displays which letters are correctly or incorrectly placed, a clear inspiration from the old Mastermind game.
+However, the user cannot enter any combination of 5 letters, he has to enter a valid word. And this is where Wordle gets it perfect: the list of acceptable user words (the *vocabulary*) is larger (12947 words). This enables wordle to know all the 5 letter words, but only choosing from the simplest ones, limiting user frustration. This is brillant game design.
 
-However, the user cannot enter any combination of 5 letters, he has to enter a valid word. And this is where Wordle gets it perfect: the list of acceptable user words (the *vocabulary*) is larger (12947 words). This enables wordle to know all the 5 letter words, but only choosing from the simplest ones, limiting user frustration.
-
-But that 12947 5 letters words. That's already 64Kb.
+But that also 12947 5-letters words. That's already 64735 bytes.
 
 Or is it?
 
 ### Encoding words
 
-Let's try some compression. It is all about using something we know in our data to encoding information more efficiently.
+Let's try some compression. In developing wozdle, I created a C++ companion program that helped me to try ideas, compute sizes, etc
 
-We can exploit the fact that a byte can store 256 letters, but we only have 26 of them. So we know that 3/8th of the bits are just zeros. If we code the letter on 5 bits, we can code a word on 25 bits.
+For wozdle, compression is all about using something we know in our data to encode information more efficiently.
 
-So, from now on, our words are numbers. 'a' = 1, 'b' = 2, expressed in base 32. This means that 'apple' is 1, 16, 16, 12, 5. In base 25, we do (((1*32+16)*32+16)*32+12)*32+5. Of course, I chose 32, so the computation is much easy to do in binary:
+First, we can exploit the fact that a byte can store 256 letters, but only have 26 of them. So we know that 3/8th of the bits are just zeros. If we code the letter on 5 bits, we can code a word on 25 bits (technically, as ``log2(26^5)`` is around 23.5, we could code the words with 24 bits, but don't count on me to implement a division by 26 in 6502 assembly)
+
+So, from now on, our words are numbers. 'a' = 1, 'b' = 2, expressed in base 32. This means that 'apple' is 1, 16, 16, 12, 5. In base 32, we do (((1*32+16)*32+16)*32+12)*32+5. Of course, the reasone I chose 32, is that the computation is trivial to do in binary:
 
        1     16    16    12    5     1,16,16,12,5           (base 32)
      00001 10000 10000 01100 00101  0b110000100000110000101 (base2)
 0000 0001 1000 0100 0001 1000 0101  (idem)
   0   1    8    4     1    8    5   0x184185                (base 16 -- hexadecimal)
 
-In decimal, Apple is 1589637. Note that choosing 'a'=1 and not 'a'=0, gives 'aaaaa' the value 108421. This was chosen to enable a slight optimisation in the 6502 assembly code.
+In decimal, Apple is 1589637. Note that choosing 'a'=1 and not 'a'=0, gives 'aaaaa' the value 108421. This was chosen to enable a small optimisation in the 6502 assembly code.
 
-If I encoded the set of words as a bunch of numbers, I would use 323675 bits, or a little over 40K.
+If we encoded the set of words as a bunch of numbers, we would use 323675 bits, or a little over 40K.
 
 ### Encoding the 12947 word vocabulary
 
-However, I don't care about order, so I can store this list in any order. So, what about sorting it?
+However, we don't care about order and we can store this list in any order. So, what about sorting it?
 
-This is a common trick. At this moment, it is easier to store the difference between consecutive elements. For instance, 'apple' is between 'appel' and 'apply', respectively 1589420 and 1589433. Instead of storing 1589637 for 'apple', if I keep the words sorted, I can just say it is 217 after 'appel'. And I can say that by adding 13 to 'apple', we get the next word.
+Now for a common trick. When working with a sorted list, it is generally easier to store the difference between consecutive elements. For instance, 'apple' is between 'appel' and 'apply', respectively 1589420 and 1589433. Instead of storing 1589637 for 'apple', if we keep the words sorted, we can just say it is 217 after 'appel'. And that by adding 13 to 'apple', we get the next word.
 
 If we apply to the list for words, we get:
 
@@ -98,33 +98,70 @@ It is obvious that the difference is smaller to encode. Let's look at it in hexa
 ...
 ```
 
-We easily see that all first bytes are zero, most seconds bytes are zero, and in may cases, a single byte is enough to encoded the difference. (There are 126 delta that needs 3 bytes for encoding), the largest one being between 'wytes' (24957107) and 'xebec' (25331875), totalling 374768.
+We easily see that all first bytes are zero, most seconds bytes are zero, and in may cases, a single byte is enough to encoded the difference. (There are 126 deltas that needs 3 bytes for encoding in the whole vocabulary), the largest one being between 'wytes' (24957107) and 'xebec' (25331875), 374768.
 
-At that point, the encoding is quite easy, and can be inspired from UTF-8:
+At that point, we can take inspiration from UTF-8 and use the first bits to describe how to encode the offsets.
+
+If the first byte starts with '0', we encode it on a single byte, with the other 7 bits representing the number:
 
 '0aaaaaaa' => aaaaaaa (0-127)
-'10aaaaaa' 'bbbbbbbb' => aaaaaabbbbbbbb (128-16384)
-'11aaaaaa' 'bbbbbbbb' 'cccccccc' => aaaaaabbbbbbbbcccccccc (16385-4194304)
 
+If it starts with '10', we encoded it on two bytes, with 14 bits of magnitude.
+
+'10aaaaaa' 'bbbbbbbb' => aaaaaabbbbbbbb (128-16384)
+
+And, on all other cases (ie: starts with '11'), we encoded it on three bytes, with 22 bits of magnitude.
+
+'11aaaaaa' 'bbbbbbbb' 'cccccccc' => aaaaaabbbbbbbbcccccccc (16385-4194304)
 
 Reading the first byte, if it start with a zero, the 7 rightmost bits are the number.
 If the second bit is a zero, then the rightmost 6 bits and the next bytes are the number.
 Else, the rightmost 6 bits and the two next bytes are the number.
 
-With these two compressions, the 12947 words of the vocabulary are encoded in 17903 bytes. So the project is possible!
+The previous offsets are then compressed to:
 
+```
+9C 83
+90 85
+97 BF
+81 A1
+B9 D8
+08
+02
+08
+61
+80 8D
+4F
+14
+80 A1
+03
+03
+1A
+80 9C
+```
+
+With these two compressions (representing words on 25 bits and encoding the difference of the sorted list), the 12947 words of the vocabulary are encoded in 17903 bytes. So the project is possible!
 
 ### Encoding the 2309 words answer list
 
-Encoding the answer list could have been done with the same process. However, there are less answers, so the differences would be larger, requiring almost always 2 bytes, which would make the list a 4.5Kb data structure.
+Encoding the answer list of 2309 words could have been done with the same process. However, there are less answers, so the gap between words would be larger, requiring almost always 2 bytes. That would make the list a 4.5Kb data structure.
 
-However, we know that the list of answers is a subset of the 12947 words vocabulary, so a simple 1618 bytes bitmap does the trick. I researched a couple of different optimisations, like adding a bit in the vocabulary encoding, but it is not worth it (this particular one had a cost of 1848 bytes, due to all offsets larger than 63 needing at least 2 bytes)
+However, we know that the list of answers is a subset of the 12947 words vocabulary, so a simple bitmap of 12947 entries can work, and do the trick in 1618 bytes. I researched a couple of different optimisations, but didn't find something both simple and efficient (The most promising one was to add bit at the end of the vocabulary encoding, so words would be even or odd wether they are in the answer list or not. But it is not worth it, as all the offsets would increase, and the cost would be 1848 bytes).
 
-While not extremely efficient for traversal those two data structures are the core of the Wozdle implementation.
+While not extremely efficient for traversal, those two data structures are the core of the Wozdle implementation.
+
+We use those at two different place:
+
+* At the begining, we pick a number between 0 and 2309. We then scan the vocabulary list and the answer bit map at the same time, ending when we have seen the right numbers of '1' in the bitmap. This gives the number of the word choosen by the computer.
+
+* When the user picks a word, we convert it to a number and scan the vocabulary list until we find it, or the end.
+
 
 ## The UX
 
-What I find a big part of the fun of developping for vintage computers is that Iwe operate within a set of hard constraints. The graphical rendering is often one of the most stringent one. In the case of the Apple 1, here is the list of constraints, which are not apparent when looking at a screenshot ("oh, this looks like an older Apple ][!"]):
+For me, a big part of the fun of developping for vintage computers is that we operate within a set of hard constraints. The graphical rendering is often one of the most stringent one. In the case of the Apple 1, here is the list of constraints, which are not apparent when looking at a screenshot ("oh, this looks like an older Apple ][!"]):
+
+### The constraints
 
 * Screen is 40x25 characters
 * There is no color
@@ -140,7 +177,7 @@ Those are "normal" constraints, but the we get into the harsher ones:
 
 * You can only write one character per screen-refresh (16ms)
 * This character is always at the cursor position
-* You cannot position the cursor on screen
+* You cannot move the cursor on screen
 * You cannot clear the screen
 
 There is one fortunate positive:
@@ -149,11 +186,19 @@ There is one fortunate positive:
 
 Looking at those constraints, it is clear that the Apple1 screen really is a Teletype, one that shred the paper every 24 lines. What we are really doing is design Wordle for a teleptype. Cool, maybe I can reuse the code for an ASR-33 Wordle ?
 
+This is pretty tough. What you see as a monitor, is closer to a teletype.
+
+[[IMAGE OF AN APPLE2]]
+
+[[IMAGE OF AN ASR33]]
+
+### The design
+
 {% blogimage "img/apple2-text-screen.png", "The upside is that you can use the grid that came page 16 of the original Apple2 manual" %}
 
 We want, at any point in time, the display to contain *at least*:
 
-* An indication of the game progress (how many guesses di you made)
+* An indication of the game progress (how many guesses did you made)
 
 * The history of the previous guesses
 
@@ -165,17 +210,19 @@ We want, at any point in time, the display to contain *at least*:
 
 The last two are displayed as a keyboard fashion on the web-based wordle. This would be a nice touch to keep.
 
-The core problem is that filling the screen with information takes 16 seconds. And as we cannot update what is already displayed, it is obvious that we need to have some sort of line-oriented approach.
+However, the core problem is that filling the screen with information takes 16 seconds. And as we cannot update what is already displayed, it is obvious that we need to have some sort of line-oriented approach.
 
-Based on those constraints we iterated into the following design principles:
+The game needs to paint a 40x25 screen during gameplay, from the top to the bottom. Redrawing the whole screen must be exceptional.
 
-* Game play will be over 4 lines blocks
+Based on those constraints I created the following design principles:
+
+* Game play will be over 4 lines blocks, so the 6 rounds will make a full screen
 
 * As there is at most 6 turns, the previous guesses will always be visible on screen
 
 * If there is any mistake made in entering, we will scroll out and redraw the whole screen, as there is no way to "undo" what we displayed.
 
-* The guesses will be placed on the left of the screen, so they can be displayed quickly
+* The guesses will be placed on the left of the screen, so they can be displayed quickly if we need to redraw the full screen.
 
 * The right side will contain the "keyboard", with the status of each letter.
 
@@ -185,7 +232,7 @@ Displaying a "full" 4 lines guess takes 16ms times 40 times 4 to display, which 
 
 Displaying only what the user entered followed by the feedback and two empty lines costs 16ms * 22, which is .3 seconds, almost 10 times faster.
 
-In order to have some "breathing room", we will add a space between each word letter. This means that the left side of the screen is going to use 10 characters, leaving 30 for the "keyboard". Each "key" of the keyboard needs a "keycap", some sort of status, and there is a need for a spearator. The longest keyboard row, the top one, is "QWERTYUIOP", and *exaclty* 10 character wide, which is a sign of the gods (10+30=40)
+In order to have some "breathing room", we will add a space between each word letter. This means that the left side of the screen is going to use 9 characters, leaving 30 for the "keyboard". Each "key" of the keyboard needs a "keycap", some sort of status, and there is a need for a separator, so we need 3 characters per key. The longest keyboard row, the top one, is "QWERTYUIOP", and *exaclty* 10 character wide, which is a sign of the gods (10+30=40).
 
 The rest of the UX is pretty simple, an intro screen (with a "press space to start" message, really used to seed the random number, and a win and loose screen, with a recap of the game)
 
