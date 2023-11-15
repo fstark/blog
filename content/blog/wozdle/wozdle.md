@@ -1,5 +1,5 @@
 ---
-title: Making Wordle for the Apple1
+title: Wordle, the best game for the Apple1
 description: Making Wordle for the Apple1
 date: 2023-08-22
 order: 1
@@ -10,29 +10,39 @@ tags:
   - wozdle
 ---
 
+{% blogimage "img/wozdle.jpg", "Wozdle running on my Apple 1" %}
+
 I recently got an apple 1, and it quicly became my favorite computer.
 
-Started probably 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful and I could get one. I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
+This started probably 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful and told me I could get one. I would have never hoped for such opportunity, and I'm forever grateful. Alos, I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
 
 My apple1 is as close to the original as possible, uses the same components, often from the same time period. For all matter, I *have an Apple 1*, it was just built 47 years too late. It may not be exactly true, but it is close enough for me. Thanks Woz. And tanks Antoine.
 
 And, frankly, the look of the machine is sick.
 
+{% blogimage "img/wozdle.jpg", "My Apple 1 is sick" %}
+
 So, Antoine is also building a ROM card for it, and we started scouring the internets for software, but, to be honest, I found the result to be quite underwhelming. There is the great 30th anniversary demo, that displays Woz, Jobs, but not much more in term of "interesting" software. The total machine language games and demos is totalling 150Kb...
 
-So, I decided to stop complaining and create something to showcase the machine. A game. A *known* game, that could be used to demo the machine.
+{% blogimage "img/wozdle.jpg", "The ROM card" %}
 
-I picked to create Wozdle, a perfect Wordle clone for the Apple 1.
+I decided to stop complaining and create something to showcase the machine. A game. A *known* game, that could be used to demo the machine.
 
-It took around two days to code, and I am pretty proud of the result.
+I picked to create Wozdle, a perfect [Wordle clone](https://www.nytimes.com/games/wordle/index.html) for the Apple 1.
+
+It took around two days to code, and I am pretty proud of the result. (for comparison, it took me 3 months to make this blog post)
 
 But there were 3 challenges to overcome.
 
 ## 32K ought to be enough for everyone
 
-The original Apple1 had 4K of RAM, extensible to 8K (like mine has), or ever 48K. Software was loaded by either inserting the cassette card and using a cassette player (extremely unreliable), or by having the software on an EEPROM (like the Integer BASIC ROM) and executing it "in place" (meaning that the code is not copied into the RAM for execution).
+The original Apple1 had 4K of RAM, extensible to 8K (like mine has), or even 48K. Software was loaded by either inserting the cassette card and using a cassette player (extremely unreliable), or by having the software on an EEPROM (like the Integer BASIC ROM) and executing it "in place" (meaning that the code is not copied into the RAM for execution).
 
-I decided for that second solution, because the goal is for it to be present in Antoine's card, which will give 32Kb of addressable ROM , so that should be plenty of space, right?
+{% blogimage "img/wozdle.jpg", "A cassette card -- will probably be a subject of another post" %}
+
+{% blogimage "img/wozdle.jpg", "The Apple1 Basic card -- A BASIC in 4K, thanks to the genius of the Woz" %}
+
+My goal is to put in in the ROM. As Antoine's ROM card gives 32Kb of addressable ROM, there should be plenty of space, right?
 
 Let me describe the rules of Wordle: the computer choses a 5 letter word from a list of 2309 words (called *answers*).Then, the user enters a word, and the computers displays which letters are correctly or incorrectly placed, a clear inspiration from the old Mastermind game.
 
@@ -44,32 +54,41 @@ Or is it?
 
 ### Encoding words
 
-Let's try some compression. In developing wozdle, I created a C++ companion program that helped me to try ideas, compute sizes, etc
+Let's try some compression. In developing wozdle, I created a C++ companion program that helped me to try ideas, compute sizes, etc. You can find it [on the github](https://github.com/fstark/wozdle/blob/main/src/wozdleutil.cpp).
 
 For wozdle, compression is all about using something we know in our data to encode information more efficiently.
 
-First, we can exploit the fact that a byte can store 256 letters, but only have 26 of them. So we know that 3/8th of the bits are just zeros. If we code the letter on 5 bits, we can code a word on 25 bits (technically, as ``log2(26^5)`` is around 23.5, we could code the words with 24 bits, but don't count on me to implement a division by 26 in 6502 assembly)
+First, we can exploit the fact that a byte can store 256 letters, but only have 26 of them. 3/8th of the bits are just zeros! Let's code the letter on 5 bits, and we can code a word on 25 bits (technically, as ``log2(26^5)`` is around 23.5, we could code the words with 24 bits, but that would require me to implement a division by 26 in 6502 assembly. And I don't want to)
 
-So, from now on, our words are numbers. 'a' = 1, 'b' = 2, expressed in base 32. This means that 'apple' is 1, 16, 16, 12, 5. In base 32, we do (((1*32+16)*32+16)*32+12)*32+5. Of course, the reasone I chose 32, is that the computation is trivial to do in binary:
+So, from now on, our words are numbers. 'A' = 1, 'B' = 2, expressed in base 32. This means that 'APPLE' is 1, 16, 16, 12, 5. In base 32, we do (((1*32+16)*32+16)*32+12)*32+5. Of course, the reason I chose 32, is that the computation is trivial to do in binary:
 
+```
+       A     P     P     L     E     APPLE
        1     16    16    12    5     1,16,16,12,5           (base 32)
      00001 10000 10000 01100 00101  0b110000100000110000101 (base2)
 0000 0001 1000 0100 0001 1000 0101  (idem)
   0   1    8    4     1    8    5   0x184185                (base 16 -- hexadecimal)
+```
 
-In decimal, Apple is 1589637. Note that choosing 'a'=1 and not 'a'=0, gives 'aaaaa' the value 108421. This was chosen to enable a small optimisation in the 6502 assembly code.
+In decimal, APPLE is 1589637. Note that choosing 'A'=1 and not 'A'=0, gives 'AAAAA' the value 108421. This was chosen to enable a small optimisation in the 6502 assembly code. In retrospect, I probably shouldn't have done that.
 
-If we encoded the set of words as a bunch of numbers, we would use 323675 bits, or a little over 40K.
+So, if we encoded the set of words as a bunch of numbers, we would use 12947*25 = 323675 bits, or a little over 40K.
+
+Not good enough yet.
 
 ### Encoding the 12947 word vocabulary
 
-However, we don't care about order and we can store this list in any order. So, what about sorting it?
+When we just encode the list, we encode all the words *and their order*.
 
-Now for a common trick. When working with a sorted list, it is generally easier to store the difference between consecutive elements. For instance, 'apple' is between 'appel' and 'apply', respectively 1589420 and 1589433. Instead of storing 1589637 for 'apple', if we keep the words sorted, we can just say it is 217 after 'appel'. And that by adding 13 to 'apple', we get the next word.
+{% digression "There are 12947! possible orders, and we choose one. One such order is log2(12947!) bits of information, which, according to Wolfram Alpha, is 158189 bits. It means that we could throw out this information, and get to about 20K." %}
+
+However, we just need the list of words and don't care about order. This means there is an opportunity to reduce the size by imposing the order. So, what about sorting it?
+
+Now for a common trick. When working with a sorted list, it is generally easier to store the difference between consecutive elements. For instance, 'APPLE' is between 'APPEL' and 'APPLY', respectively 1589420 and 1589433. Instead of storing 1589637 for 'APPLE', if we keep the words sorted, we can just say it is 217 after 'APPEL'. And that by adding 13 to 'APPLE', we get the next word.
 
 If we apply to the list for words, we get:
 
-words: aahed aalii aargh aarti abaca abaci aback abacs abaft abaka abamp aband abase abash abask abate abaya
+words: AAHED AALII AARGH AARTI ABACA ABACI ABACK ABACS ABAFT ABAKA ABAMP ABAND ABASE ABASH ABASK ABATE ABAYA
 
 numbers: 1089700 1093929 1100008 1100425 1115233 1115241 1115243 1115251 1115348 1115489 1115568 1115588 1115749 1115752 1115755 1115781 1115937...
 
@@ -98,49 +117,50 @@ It is obvious that the difference is smaller to encode. Let's look at it in hexa
 ...
 ```
 
-We easily see that all first bytes are zero, most seconds bytes are zero, and in may cases, a single byte is enough to encoded the difference. (There are 126 deltas that needs 3 bytes for encoding in the whole vocabulary), the largest one being between 'wytes' (24957107) and 'xebec' (25331875), 374768.
+We easily see that all first bytes are zero, most seconds bytes are zero, and in may cases, a single byte is enough to encoded the difference. (There are 126 deltas that needs 3 bytes for encoding in the whole vocabulary), the largest one being between 'wytes' (24957107) and 'xebec' (25331875), and is 374768 (a 19 bits value).
 
 At that point, we can take inspiration from UTF-8 and use the first bits to describe how to encode the offsets.
 
-If the first byte starts with '0', we encode it on a single byte, with the other 7 bits representing the number:
+If the first byte starts with '0', we encode it on a single byte, with the first bit zero and the other 7 representing the number:
 
-'0aaaaaaa' => aaaaaaa (0-127)
+0-127, a 7 bits value, with bits ``a6 a5 a4 a3 a2 a1 a0``, is encoded as 8 bits: ``0 a6 a5 a4 a3 a2 a1 a0``
 
-If it starts with '10', we encoded it on two bytes, with 14 bits of magnitude.
+128-16384, a 14 bits value, with bits ``a5 a4 a3 a2 a1 a0 b7 b6 b5 b4 b3 b2 b1 b0`` is encoded as 16 bits: ``1 0 a5 a4 a3 a2 a1 a0 b7 b6 b5 b4 b3 b2 b1 b0``
 
-'10aaaaaa' 'bbbbbbbb' => aaaaaabbbbbbbb (128-16384)
+16385-4194304, a 22 bits value, with bits ``a5 a4 a3 a2 a1 a0 b7 b6 b5 b4 b3 b2 b1 b0 c7 c6 c5 c4 c3 c2 c1`` is encoded as 24 bits: ``1 1 a5 a4 a3 a2 a1 a0 b7 b6 b5 b4 b3 b2 b1 b0 c7 c6 c5 c4 c3 c2 c1``
 
-And, on all other cases (ie: starts with '11'), we encoded it on three bytes, with 22 bits of magnitude.
-
-'11aaaaaa' 'bbbbbbbb' 'cccccccc' => aaaaaabbbbbbbbcccccccc (16385-4194304)
-
-Reading the first byte, if it start with a zero, the 7 rightmost bits are the number.
-If the second bit is a zero, then the rightmost 6 bits and the next bytes are the number.
+To decode, it is easy: we read the first byte, if it start with a zero, the 7 rightmost bits are the number.
+If the second bit is a zero, then the rightmost 6 bits and the next byte are the number.
 Else, the rightmost 6 bits and the two next bytes are the number.
 
 The previous offsets are then compressed to:
 
 ```
-9C 83
-90 85
-97 BF
-81 A1
-B9 D8
-08
-02
-08
-61
-80 8D
-4F
-14
-80 A1
-03
-03
-1A
-80 9C
+00 1C 83 => 9C 83
+00 10 85 => 90 85
+00 17 BF => 97 BF
+00 01 A1 => 81 A1
+00 39 D8 => B9 D8
+00 00 08 => 08
+00 00 02 => 02
+00 00 08 => 08
+00 00 61 => 61
+00 00 8D => 80 8D
+00 00 4F => 4F
+00 00 14 => 14
+00 00 A1 => 80 A1
+00 00 03 => 03
+00 00 03 => 03
+00 00 1A => 1A
+00 00 9C => 80 9C
 ```
 
-With these two compressions (representing words on 25 bits and encoding the difference of the sorted list), the 12947 words of the vocabulary are encoded in 17903 bytes. So the project is possible!
+Compare: ``00 1C 83 00 10 85 00 17 BF 00 01 A1 00 39 D8 00 00 08 00 00 02 00 00 08 00 00 61 00 00 8D 00 00 4F 00 00 14 00 00 A1 00 00 03 00 00 03 00 00 1A 00 00 9C``
+and: ``9C 83 90 85 97 BF 81 A1 B9 D8 08 02 08 61 80 8D 4F 14 80 A1 03 03 1A 80 9C``
+
+We went from 51 bytes down to 25, morre than 50% gain.
+
+With these two compressions (representing words on 25 bits and encoding the difference of the sorted list), the 12947 words of the vocabulary are now encoded in 17903 bytes and the project become possible!
 
 ### Encoding the 2309 words answer list
 
@@ -150,16 +170,20 @@ However, we know that the list of answers is a subset of the 12947 words vocabul
 
 While not extremely efficient for traversal, those two data structures are the core of the Wozdle implementation.
 
-We use those at two different place:
+It is used at two different place:
 
-* At the begining, we pick a number between 0 and 2309. We then scan the vocabulary list and the answer bit map at the same time, ending when we have seen the right numbers of '1' in the bitmap. This gives the number of the word choosen by the computer.
+* At the begining, we pick a number between 1 and 2309. This is the guess the player must find. We then scan the vocabulary list and the answer bit map at the same time, ending when we have seen the right numbers of '1' in the bitmap. This gives the number associated to the word choosen by the computer, which we decode as 5 ASCII characters.
 
-* When the user picks a word, we convert it to a number and scan the vocabulary list until we find it, or the end.
+* When the user picks a word, we convert it to a number and scan the vocabulary list until we find it, or the end. This enables us to validate if a word is in the vocabulary or not
 
 
 ## The UX
 
 For me, a big part of the fun of developping for vintage computers is that we operate within a set of hard constraints. The graphical rendering is often one of the most stringent one. In the case of the Apple 1, here is the list of constraints, which are not apparent when looking at a screenshot ("oh, this looks like an older Apple ][!"]):
+
+
+{% blogimage "img/apple1 hex screen", "This is not at all like an Apple ][" %}
+
 
 ### The constraints
 
@@ -173,7 +197,9 @@ PQRSTUVWXYZ[\]^_
 0123456789:;<=>?
 ```
 
-Those are "normal" constraints, but the we get into the harsher ones:
+Those are quite "normal" constraints, for vintage computers.
+
+However, there are harsher ones:
 
 * You can only write one character per screen-refresh (16ms)
 * This character is always at the cursor position
@@ -188,11 +214,11 @@ Looking at those constraints, it is clear that the Apple1 screen really is a Tel
 
 This is pretty tough. What you see as a monitor, is closer to a teletype.
 
-[[IMAGE OF AN APPLE2]]
+{% blogimage "img/apple2", "What you think you have" %}
 
-[[IMAGE OF AN ASR33]]
+{% blogimage "img/asr33", "What you really have" %}
 
-### The design
+### The UX design
 
 {% blogimage "img/apple2-text-screen.png", "The upside is that you can use the grid that came page 16 of the original Apple2 manual" %}
 
@@ -200,7 +226,7 @@ We want, at any point in time, the display to contain *at least*:
 
 * An indication of the game progress (how many guesses did you made)
 
-* The history of the previous guesses
+* The history of the previous guesses (total number of allowed guesses is 6)
 
 * The responses for each of those guesses (which characters were properly placed, which we not properly placed, which are not in the target word)
 
@@ -208,37 +234,67 @@ We want, at any point in time, the display to contain *at least*:
 
 * Nice to have: the list of character you already found
 
-The last two are displayed as a keyboard fashion on the web-based wordle. This would be a nice touch to keep.
+In the web based version of Wordle, the last two are displayed as a keyboard. This would be a nice touch to keep.
 
-However, the core problem is that filling the screen with information takes 16 seconds. And as we cannot update what is already displayed, it is obvious that we need to have some sort of line-oriented approach.
+However, the core problem is that we cannot update what is already displayed and filling a single screen with information takes *16 seconds*. It is obvious that we need to have some sort of line-oriented approach. I told you it was an ASR33...
 
-The game needs to paint a 40x25 screen during gameplay, from the top to the bottom. Redrawing the whole screen must be exceptional.
+The design is that the game will play on a single 40x25 screen that will fill during gameplay. Redrawing the whole screen must be exceptional.
 
-Based on those constraints I created the following design principles:
+The game is played in 6 rounds, where the player enters a word, and see how it did.
 
-* Game play will be over 4 lines blocks, so the 6 rounds will make a full screen
+Based on the above constraints I derived the following design principles:
 
-* As there is at most 6 turns, the previous guesses will always be visible on screen
+* All guesses must be visible on screen
 
-* If there is any mistake made in entering, we will scroll out and redraw the whole screen, as there is no way to "undo" what we displayed.
+* As there are 24 lines, each guess will take 4 line
 
-* The guesses will be placed on the left of the screen, so they can be displayed quickly if we need to redraw the full screen.
+* If there is any mistake made in entering, we will scroll out and redraw the whole screen, as there is no way to "undo" what we displayed. We will only redraw what is important for the gameplay, so:
+
+* The guesses will be placed on the left of the screen, so they can be displayed quickly when we need to redraw the full screen.
 
 * The right side will contain the "keyboard", with the status of each letter.
 
-* We will only draw the keyboard for the current solution. If we need to refresh the screen, we will not draw the keyboard for any guesses but the last.
+* This keyboard is only useful for the current solution. If we need to refresh the screen, we will not draw the keyboard for any guesses but the last.
 
-Displaying a "full" 4 lines guess takes 16ms times 40 times 4 to display, which is 2.5 seconds.
+Now, the "graphical" design
 
-Displaying only what the user entered followed by the feedback and two empty lines costs 16ms * 22, which is .3 seconds, almost 10 times faster.
+The user will directly type his guess.
 
-In order to have some "breathing room", we will add a space between each word letter. This means that the left side of the screen is going to use 9 characters, leaving 30 for the "keyboard". Each "key" of the keyboard needs a "keycap", some sort of status, and there is a need for a separator, so we need 3 characters per key. The longest keyboard row, the top one, is "QWERTYUIOP", and *exaclty* 10 character wide, which is a sign of the gods (10+30=40).
+In order to have some "breathing room", we will add a space between each word letter.
+
+This means that the left side of the screen is going to use 9 characters for the guess.
+
+On the line under the guess, we will put the result ('?' and '!' to indicate which characters were correct)
+
+We will need some sort of separator and have 30 characters left to draw the "keyboard".
+
+Each "key" of the keyboard needs a "keycap", some sort of status, and there is a need for a separator, so we need 3 characters per key. The longest keyboard row, the top one, is "QWERTYUIOP", and *exaclty* 10 character wide, which is a sign of the gods, 9+1+30=40.
+
+Displaying a "full" 4 lines guess takes 16ms\*40\*4 to display, which is 2.5 seconds.
+
+However, displaying only what the user entered followed by the feedback and two empty lines costs 16ms * 22, which is .3 seconds, almost 10 times faster, so we can quickly redraw the screen in case of failure.
+
+{% blogimage "img/5 lines.png", "The screen had no redraw" %}
+
+{% blogimage "img/5 lines mistake.png", "We made a mistake, but it was quick to redisplay" %}
 
 The rest of the UX is pretty simple, an intro screen (with a "press space to start" message, really used to seed the random number, and a win and loose screen, with a recap of the game)
 
-All in all, I am *extremly* happy at the resulting UX. I find the game as enjoyable as the web version, maybe even more focused. In my opinion, there is nothing to add and nothing to remove.
+All in all, I am *extremly* happy at the resulting UX. I find the game as enjoyable as the web version, maybe even more focused. In my opinion, there is nothing to add and nothing to remove. Antoine de Saint Exupery would be happy.
 
-This UX would also work pretty well on a teletype, the only change would be that there is no need to redraw the whole thing when the user makes a mistake, as the paper trail is still here.
+{% blogimage "img/5 lines mistake.png", "La perfection est atteinte, non pas lorsqu'il n'y a plus rien à ajouter, mais lorsqu'il n'y a plus rien à retirer" %}
+
+This UX would also work pretty well on a teletype, the only change would be that there is no need to redraw the whole thing when the user makes a mistake, as the paper trail is still here (we are not limited to 24 lines)
+
+
+...to be continued...
+
+
+
+
+
+
+
 
 ## The code
 
