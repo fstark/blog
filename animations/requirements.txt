@@ -36,5 +36,5 @@ skia-pathops==0.7.4
 srt==3.5.3
 svgelements==1.9.5
 tqdm==4.66.1
-urllib3==2.0.4
+urllib3==2.0.6
 watchdog==2.3.1
