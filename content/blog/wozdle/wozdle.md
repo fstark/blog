@@ -369,10 +369,71 @@ And if you need to increment something, you can directly ``INC $41`` if you want
 
 By examining the usage of the ZP, one can learn a lot about the organisation of a 6502 program.
 
+(PICTURE OF THE ZERO PAGE IN THE EMULATOR)
+
+Let's now dig into a few intereting pieces of code
+
+### Printing a message
+
+### Choosing a target word
+
+At startup, we need to choose one of the 2309 possible answer words. However, there is no random generation baked anywhere in the Apple 1. Moder computers have on-cpu random number generators and a lot of randomness in the peripherals. This is called "sources of entropy", and you can generate random numbers by mixing all of them. Older computers didn't have that, but generally had a way to get the current time, which was used to seed a pseudo-random generator.
+
+The Apple 1 has nothing of this. The most reliable source of entropy we have is the user, and this is why Wozdle asks the user to press the space bar at startup. After displaying this message, we make sure that there is no pending key:
+
+
+```Assembly
+        ;   Display user message
+    JSR MSGINLINE
+    .byte $d, $d, "     -- press space for new game -- ", 0
+
+        ;   Eats any key already pressed
+    LDA KBD           
+
+        ;   Wait for space while incrementing random
+LOOP1:
+                        ;   Increment ANSINX to create entrpy
+                        ;   based on player speed
+    INC ANSINX
+    BNE CONT
+    INC ANSINX+1
+CONT:
+    LDA KBDCR           ;   Key pressed?
+    BPL LOOP1           ;   No
+    LDA KBD             ;   Key pressed
+    AND #$7f            ;   Last 7 bits
+    CMP #" "            ;   Space?
+    BNE LOOP1           ;   Nope
+```
+
+First we use a ``LDA KBD`` to remove any potentially pressed key (or the user could have the algorithm always generate the same word by pressing ``SPACE`` during the display of the message).
+
+```ANSINX``` is the index of the target answer in the list of answers. It is a number between 0 and 2308. We increment it as fast as we can while waiting for a key press.
+
+The core of the loop is about 15 cycles and the CPU is 1MHz, so we count 66 666 times per seconds, a number very fitting for the Apple1 whose original retail price was $666.66.
+
+We reach 2309 in around a 3 hundredth of a second, so the user have very little control on the exact number generated.
+
+As the number is 16 bits, it wraps, so we get a fairly random number between 0 and 65536 (probably in the lower range, if the user pressed the key less than a second after the message). Of course, we could augment the randomness by asking for several keys, but there is a balance between technical perfection and usability.
+
+We then add 2309 from the generated number until we overflow. This ensure we have a number between 0 and 2309, and is really quick (at most 28 iterations):
+
+```
+MODULO:
+    CLC
+MODULOOP:
+    LDA ANSINX
+    ADC #<ANSCOUNT
+    STA ANSINX
+    LDA ANSINX+1
+    ADC #>ANSCOUNT
+    STA ANSINX+1
+    BCC MODULOOP
+```
+
+Note the way an multi-bytes addition is performed on the 6502: here we are adding the constant ANSCOUNT to the value stored in the Zero Page two bytes, starting at ANSINX. First, we use ``CLC`` to clear the carry flag, then we load the value at ANSINX, which is the lower byte of the number. We add (with carry) the lower byte of ANSCOUNT (# means immediate, aka constant, and < means lower byte). We then store the result back into ANSINX. This operation did set the carry flag if the result overflowed the byte. Using ADC on ANSINX+1 and the upper byte of ANSCOUNT, propagating the carry, will yield the right answer. If the higher byte did not overflow, we do a new iteration (BCC means Branch if Carry Clear).
 
 
 
-
--> random
 -> large letters
 -> Astuce du 'zzzzz' en dernier mot ajoute a la liste de mots.
