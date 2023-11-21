@@ -277,3 +277,14 @@ figcaption {
 	font-style: italic;
 	font-size: 90%;
 }
+
+
+/* FReD for mobile */
+figure
+{
+	margin: 0px;
+}
+
+.blogimage {
+	max-width: 100%;
+}

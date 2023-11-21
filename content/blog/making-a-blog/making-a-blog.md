@@ -35,8 +35,8 @@ My set of hard requirements is pretty simple:
 
 There are additional softer requirements:
 
-- I'd like to have the content stored in a public github and publish via commit
-- I'd like to have a version of the website accessible to vintge web browser (ie: no https, simple formating)
+- I'd like to have the content stored in a public github and published via commit
+- I'd like to have a version of the website accessible to vinage web browser (ie: no https, simple formating)
 
 Anyway, all this meant using a static web site generator, and hosting the resulting files myself. I did spent some time looking at various generators, but nothing seemed to be close to what I want. I did think about writing mine, as the layout I need is pretty trivial, but [we all know how it goes](https://xkcd.com/974/)
 
@@ -52,7 +52,7 @@ I can use
 { % image "path/to/image.png", "Image Title"}
 ```
 
-*(Well, actually I can't I had to add a space betwee ``{`` and ``%``, because if I don't the templating engine interprets this as a command...)
+*(Well, actually I can't I had to add a space betwee ``{`` and ``%``, because if I don't the templating engine interprets this as a command...)*
 
 However, I just want to specify a hard-coded size for the image display. Well, here is the [documentation of the "image plugin"](https://www.11ty.dev/docs/plugins/image/#creating-an-shortcode). I didn't want something complicated. I didn't want to know about the internal of the javascript. I just wanted to specify a size.
 
@@ -72,6 +72,8 @@ And this is supposed to be the leanest, simplest, website generator... And as th
 While writing this rant, I didn't realise that the templating engine would parse the ``%image`` inside the code block, so it failed and just arbitrarily truncated the content
 
 {% image "img/11ty-truncate.png", "Image Title" %}
+
+I mean, that's it. The post just stops as soon as the engine get confused.
 
 ## Restarting the server
 
@@ -110,13 +112,12 @@ This was the result, I kid you not:
 
 {% image "img/11ty-animated-gif.png", "An animated gif, according to 11ty..." %}
 
-I am not surprised, but the awfulness of modern frameworks never fails to disapoint me...
+Yep. The most logical way to render an animated gif is to render all the images in one larger one. I am not surprised, but the awfulness of modern frameworks never fails to disapoint me...
 
-So I guessed that was because the image plugin didn't output animated gif by default, and I added gif to the list of supported outputs. Which didn't work until I removied all the other formats
+So I guessed that was because the image plugin didn't output animated gif by default, so this was his best try. So, I added gif to the list of supported outputs. Which didn't chnage anything because the code is too happy with his png generation. So I removed  removed all the other formats, making sure it would output a gif.
 
-I then got the marvelous:
+And it worked.
 
-{% image "img/11ty-animated-gif-2.png", "We go the animation working!" %}
+{% image "img/11ty-animated-gif-2.png", "We got the animation working!" %}
 
-And, yes, it was animated.
-
+And, yes, it was actually animated.

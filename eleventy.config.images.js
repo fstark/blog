@@ -72,7 +72,7 @@ module.exports = eleventyConfig => {
         // console.log( file );
         // console.log( metadata );
         markup.push( '<figure><a href="/'+destfile+'" target="_blank"><img' );
-        markup.push( 'loading="lazy" decoding="async" src="'+filemeta.url+'"')
+        markup.push( 'loading="lazy" decoding="async" src="'+filemeta.url+'" class="blogimage"')
         markup.push( '></a><figcaption>'+caption+'</figcaption></figure>' );
         return markup.join(" ");
     });
@@ -84,7 +84,7 @@ module.exports = eleventyConfig => {
 
     fs.copyFile( file, destfile, (err) => {} );
 
-    return '<video controls width="640"><source src="/'+src+'" type="video/mp4">Your browser does not support the video tag.</video>';
+    return '<video controls width="100%"><source src="/'+src+'" type="video/mp4">Your browser does not support the video tag.</video>';
     } );
 
     eleventyConfig.addAsyncShortcode("twitter", async function imageShortcode( handle ) {
@@ -95,6 +95,10 @@ module.exports = eleventyConfig => {
     eleventyConfig.addAsyncShortcode("mastodon", async function imageShortcode( server, handle ) {
       console.log( handle );
       return '<a href="https://'+server+'/'+handle+'" target="_blank">'+handle+'</a>';
+    });
+
+    eleventyConfig.addAsyncShortcode("digression", async function digressionShortcode( text ) {
+      return '';
     });
 
   };

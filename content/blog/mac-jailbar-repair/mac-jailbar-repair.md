@@ -5,7 +5,7 @@ date: 2023-08-08
 order: 1
 draft: false
 tags:
-  - repair
+  - hardware
   - mac
 ---
 
