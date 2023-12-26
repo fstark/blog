@@ -17,7 +17,18 @@ The Casion PB-700 with its CA-10 is my favorite computer.
 
 It is a fascinating little device from 1983. It has a sleek 160x32 pixels screen, and a whoping 4Kb of RAM, extensible to 16K, using 3 modules made of unobtainium.
 
-It has a companion printer, the FA-10, which is actually a 4 colors pen-plotter, found in a few machines of the era (like in the [Sharp PC-1500](https://en.wikipedia.org/wiki/Sharp_PC-1500), in a smaller version, or [as an accessory to the TRS-80](https://colorcomputerarchive.com/repo/Documents/Manuals/Hardware/CGP-115%20(Tandy).pdf), or [some versions of the Sharp MZ-700](https://original.sharpmz.org/mz-700/useplot.htm))
+It has a companion printer, the FA-10, which is actually a 4 colors pen-plotter, found as an accessory for few machines of the era, like:
+
+- [The Atari 8 bits](https://en.wikipedia.org/wiki/Atari_1020),
+- [The superb Canon X-07](https://oldmachinery.blogspot.com/2014/10/canon-x-710-plotter.html),
+- [The Commodores](https://homecomputerguy.de/en/2021/12/26/commodore-vc-1520-plotter/),
+- [As an accessory to the TRS-80](https://colorcomputerarchive.com/repo/Documents/Manuals/Hardware/CGP-115%20(Tandy).pdf)
+- [Some versions of the Sharp MZ-700](https://original.sharpmz.org/mz-700/useplot.htm)
+
+And, in smaller versions in:
+
+- [The famous Sharp PC-1500 / Tandy PC-2](https://en.wikipedia.org/wiki/Sharp_PC-1500)
+- [The Texas Instruments HX-1000](http://www.datamath.org/Graphing/HX-1000.htm)
 
 Unfortunately, mine isn't fully working, and I only managed to get one color, so PloTTY is a monochrome program.
 
@@ -27,7 +38,7 @@ It is a shame that there are no real impressive demos of what that machine and p
 
 However, I can't draw, but I can code. And coding is done to make computer do what we can't, right?
 
-*What if I made a program where I type what I want to draw and the PB-700 just draws it?*
+*What if I made a program where I can type what I want to draw and the PB-700 just draws it?*
 
 So, connecting the PB-700 to midjourney is the obvious idea. A linux box will do the midjourney request, some image manipulation and serve the result to the PB-700.
 
