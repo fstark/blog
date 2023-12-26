@@ -10,7 +10,7 @@ tags:
 
 ## Background
 
-I am an ex-NeXT developer, from around 1991 until 2005. I went through the original NeXT hardware, used NeXTstep on sparc a bit, moved to NeXTstep on Intel, then OPENSTEP, and even finished on the YellowBox, aka OPENSTEP ENTERPRISE (OpenStep on Windows NT). Now that I am computer collecting, I had to get a few cubes back, and play with them.
+The NeXTcube is my favorite machine. The reasone for that is that I am an ex-NeXT developer, from around 1991 until 2005. I went through the original NeXT hardware, used NeXTstep on sparc a bit, moved to NeXTstep on Intel, then OPENSTEP, and even finished on the YellowBox, aka OPENSTEP ENTERPRISE (OpenStep on Windows NT). Now that I am collecting computers, I had to get a few cubes back, and play with them.
 
 Doing that, I have to re-learn a few things, and doing so, I realised how hard it must be for people who didn't spent so many years with the machine. Documentaiton out there is either very superficial, incomplete, or just too specifialized.
 
@@ -18,19 +18,19 @@ My hope there is to create a document so anyone that have some black hardware is
 
 ## The Basics
 
-At the begining was the NeXT Computer. It was a 68030 cube box, powered by an optical disk. It was extremely slow, and fundamentally unusable.
+At the begining was the "NeXT Computer". It was a 25MHz 68030 cube box, with an internal optical disk. It was extremely slow, and fundamentally unusable.
 
-It was then replaced by the NeXT Cube, with a 68040 and an internal hard disk. This is fundamentally the baseline of NeXT computers.
+It was then replaced by the "NeXTcube", with a 25MHz 68040 and an internal hard disk. This machine is the fundamental baseline of NeXT computers.
 
-Both of those computers are intentical magnesium cubes. You can swap components between them.
+Both of those computers are identical magnesium cubes. You can swap components between them. Mostly. There are differences in power supplies.
 
 The cube is a backplane, with space for 4 card, one being the motherboard.
 
-The motherboard have to be placed in slot #2, the one just right to the power supply if you look at the cube from the back. No other slot will work.
+The motherboard have to be placed in slot #0, the one just right to the power supply if you look at the cube from the back. No other slot will work without harware hacking.
 
-If you want to distinguish a 68030 from a 68040, it is simple: the 68040 have an RJ-45 ethernet connection.
+If you want to distinguish a 68030 from a 68040, it is simple: look at the back, the 68040 have an RJ-45 ethernet connection.
 
-There have been very few extension cards for the NeXT. NeXt made the Dimension board, a 24 bits video card with video capture abilities. This card was rare but not unheard of, and there is some software for it, so having one in your cube is not too strange.
+There have been very few extension cards for the NeXT. NeXt made the NeXTdimension board, a 24 bits video card with video capture abilities. This card was rare but not unheard of, and there is some software for it, so having one in your cube is not too strange. See later section on the NeXTdimension.
 
 In the non-NeXT cards, French IRCAM created the IRCAM board, containing a bunch of DSP for sound processing. There are very few existing, and they need special software.
 
@@ -42,11 +42,11 @@ As all computers from that period, there are two things you need to do:
 
 ## Variants
 
-After the NeXT Cube, NeXT create the NeXTstation. It is more or less identical to the cube, the only difference is the form factor. All cables are interchangeables between a cube and a NeXTstation.
+After the NeXTcube, NeXT create the NeXTstation. It is more or less identical to the cube, the only difference is the form factor. All cables are interchangeables between a cube and a NeXTstation.
 
 Then, there was the NeXTstation Color.
 
-Then, there wer "turbo" versions of each machine, (Cube Tubo, Station Turbo, Station Turbo Color). Unfortunately, the keyboard are incompatible, the turbos use a variation of Apple's ADB.
+Then, there wer "turbo" versions of each machine, (Cube Tubo, Station Turbo, Station Color Turbo). Unfortunately, the keyboard are incompatible, the turbos use a variation of Apple's ADB.
 
 ## Memory configurations
 
@@ -72,7 +72,7 @@ At the end, a SoundBox is needed if you don't have the NeXT MegaPixel display. T
 
 There is no power switch on the NeXT. To boot, you need to make sure you have a good battery inside, and that the keyboard is connected to the MegaPixel or SoundBox, and press the power key (in th middle of the keyboard). You should hear a "click" and the next should start.
 
-If you have no keyboard/megapixel, a simple connection with a resistor can help you boot the machine (this is helpful if you just want to check if the motherboard works). You'll have to unplug the machine to powert it down.
+If you have no keyboard/megapixel, a simple connection with a 4760 Ohm resistor between pin 6 and 19 of the DB-19 will boot the machine (this is helpful if you just want to check if the motherboard works). You'll have to unplug the machine to powert it down.
 
 ## The NeXT System Monitor
 
@@ -94,8 +94,14 @@ There are two users by default on a NeXT: the local ``root`` user, and the local
 
 By default ``root`` has no password, so a fresh install will automatically log ``me`` in. You have to log out and log in back using ``root``.
 
-[[restart/console]]
-
 If the NeXT has been used, it probably already have users, and you may not know the passwords. Do no panic, here is one way to bypass authentication on a NeXT.
 
+Boot in the monitor. Enter ``bsd -s`` to boot single user. After the boot, you will be dropped into a terminal on the console. You then complete the boot as a background process, using ``sh /etc/rc&`` (passwords are served by ``netinfo``, it needs to be running for the following command to do the right thing). Use ``nu -m`` (nu==new user) to reset the root password. Reboot the machine using ``sync``, ``sync``, and ``reboot now``.
 
+Tip: at the login screen, you can enter the user name "restart" to restart the NeXT, or "console" to get a console login.
+
+Removing the me password. Use the ``nu -m`` command as root to remove the "me" password.
+
+## Manual fsck
+
+Sometimes, the NeXT may ask you to run ``fsck`` manually. In that case, boot "single users" (bsd -s), 
