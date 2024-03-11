@@ -10,7 +10,7 @@ tags:
 
 ## Background
 
-The NeXTcube is my favorite machine. The reasone for that is that I am an ex-NeXT developer, from around 1991 until 2005. I went through the original NeXT hardware, used NeXTstep on sparc a bit, moved to NeXTstep on Intel, then OPENSTEP, and even finished on the YellowBox, aka OPENSTEP ENTERPRISE (OpenStep on Windows NT). Now that I am collecting computers, I had to get a few cubes back, and play with them.
+The NeXTcube is my favorite machine. The reason for that is that I am an ex-NeXT developer, from around 1991 until 2005. I went through the original NeXT hardware, used NeXTstep on sparc a bit, moved to NeXTstep on Intel, then OPENSTEP, and even finished on the YellowBox, aka OPENSTEP ENTERPRISE (OpenStep on Windows NT). Now that I am collecting computers, I had to get a few cubes back, and play with them.
 
 Doing that, I have to re-learn a few things, and doing so, I realised how hard it must be for people who didn't spent so many years with the machine. Documentaiton out there is either very superficial, incomplete, or just too specifialized.
 
@@ -105,3 +105,57 @@ Removing the me password. Use the ``nu -m`` command as root to remove the "me" p
 ## Manual fsck
 
 Sometimes, the NeXT may ask you to run ``fsck`` manually. In that case, boot "single users" (bsd -s), 
+
+
+## Operating System Versions
+
+* 0.8 : 0.8 is the first known version of the system. There is no official release as it was just installed on optical disks, and modified by users. There is a known version, but it is unclear how pristine it is.
+
+* 0.9 : Same story as 0.8
+
+* 1.0 : NeXTstep 1.0. First real version of the OS. Last version with the famous "Black Hole" as recycler bin.
+
+* 1.0a : Last version of 1.0?
+
+=> On NS10a-MO.raw
+
+* 2.0 : NeXTstep 2.0 (March 1991) - support for Cubes
+
+* 2.1 : A better 2.0
+
+* 2.2 : Support for Turbo machines
+  (note single CD for OS and dev, need to use floppy to install dev after install)
+
+* 3.0 : NeXTstep 3.0 (Sep 1992)
+
+* 3.1 : Support for x86 (May 1993)
+
+* 3.2 : Support for HP-PA (Oct 1993)
+
+* 3.3 : Support for sparc (Feb 1995)
+
+* 3.3patch3 : Latest version with Y2K support (Nov 1999)
+
+* 4.0, 4.1, 4.2, up to 4.2p3, (Mar 1999)
+
+## Notes:
+
+# Device names:
+
+/dev/rod0a, /dev/rod0b : magneto-optical disk partitions
+
+
+## Building a MO disk from a 0.8 image in Previous
+
+# Create a 256MB MO file
+
+``dd if=/dev/zero of=MO.raw bs=1048576 count=256``
+
+Add it to Previous as a MO disk
+
+
+## Machines for Luuk
+
+NS2.0 => Oldest next step, most vintage
+NS3.3 => Best next step
+OS4.2 => Latest next step
