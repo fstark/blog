@@ -338,6 +338,8 @@ The maximum number of iterations depends on the zoom level, are stored at the ad
 
 ## Automatic zoom
 
+{% blogimage "img/enhance.gif", "Enhance!" %}
+
 To make the display more enjoyable, we auto-zoom 4 seconds after having displayed the image. The are 5 zoom levels, each roughly twice as zoomed as the previous one.
 
 The Mandelbrot set is much more interesting close to the border of the set.
