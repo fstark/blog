@@ -3,8 +3,7 @@ title: Implementing Wozdle (Wozdle 3/3)
 description: "Making Wordle for the Apple1 3/3 : Implementation"
 date: 2023-10-22
 order: 1
-eleventyExcludeFromCollections: false
-# permalink: wozdle-implementation
+eleventyExcludeFromCollections: true
 tags:
   - 6502
   - apple1

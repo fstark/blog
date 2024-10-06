@@ -3,8 +3,7 @@ title: Wozdle, the best game for the Apple1 (Wozdle 1/3)
 description: "Making Wordle for the Apple1 1/3 : feasability"
 date: 2023-08-22
 order: 1
-eleventyExcludeFromCollections: false
-# permalink: wozdle-wordle-for-the-apple1/
+eleventyExcludeFromCollections: true
 tags:
   - apple1
   - wozdle

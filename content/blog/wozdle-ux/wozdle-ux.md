@@ -3,8 +3,7 @@ title: Designing the UX of Wozdle (Wozdle 2/3)
 description: "Making Wordle for the Apple1 2/3 : UX"
 date: 2023-10-21
 order: 1
-eleventyExcludeFromCollections: false
-# permalink: wozdle-UX-design
+eleventyExcludeFromCollections: true
 tags:
   - apple1
   - wozdle

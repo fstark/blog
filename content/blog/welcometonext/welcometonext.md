@@ -3,7 +3,7 @@ title: Welcome to NeXT
 description: Beginers guide to the black Hardware
 date: 2023-12-26
 order: 1
-eleventyExcludeFromCollections: false
+eleventyExcludeFromCollections: true
 tags:
   - next
 ---

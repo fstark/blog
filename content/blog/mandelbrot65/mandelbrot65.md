@@ -3,7 +3,7 @@ title: 6502 assembly Mandelbrot for Apple1
 description: Designing and coding a 6502 assemble version of Mandelbrot for the Apple1
 date: 2024-10-03
 order: 1
-eleventyExcludeFromCollections: false
+eleventyExcludeFromCollections: true
 tags:
   - coding
   - Apple1
@@ -319,6 +319,10 @@ At the end, the Mandelbrot calculation, performed in the routine ``MANDEL1`` loo
 (``MLOADAX`` is a macro that loads a number in the A and X registers)
 
 Absolutely straightforward.
+
+{% blogvideo "img/speed-comparison.webm", "We spend most of our time waiting to display the next character" %}
+
+On the above video, I modified the emulator on the right hand so it displays characters as fast as it can. It shows that most of the time of the program is spent waiting for the display subsystem of the Apple1 to be ready (again, only 1 character every 16ms).
 
 ## The overall code structure
 
