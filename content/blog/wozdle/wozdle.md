@@ -19,7 +19,7 @@ tags:
 
 I recently got an apple 1, and it quickly became my favorite computer.
 
-This started about 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful of bran news Apple 1 and asked me if I wanted one. I would have never hoped for such opportunity, and I'm forever grateful. Also, I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
+This started about 6 months ago, when Antoine, aka {% twitter "SiliconInsid" %} started to build a handful of brand news Apple 1 and asked me if I wanted one. I would have never hoped for such opportunity, and I'm forever grateful. Also, I was intrigued, because I thought maybe we could do some nasty software hack (short answer: unfotunately not, maybe more on that in a future blog post).
 
 My apple1 is as close to the original as possible, uses the same components, often from the same time period. For all matter, I *have an Apple 1*, it was just built 47 years too late. It may not be exactly true, but it is close enough for me. Thanks Woz. And thanks Antoine.
 

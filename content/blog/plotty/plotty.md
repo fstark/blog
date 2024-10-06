@@ -290,7 +290,7 @@ The output of the script:
 
 Those coordinates can then be turned into a basic program for the PB-700 by the [``json2basic.py`` python script](https://github.com/fstark/PloTTY/blob/main/pb-700/json2basic.py)
 
-```BASIC
+```basic
 1CLS:PRINT"Lines 1-93/93"
 2LPRINT CHR$(28);CHR$(37):LPRINT"O0,-96"
 3LPRINT"D30.8,62.4,31.6,61.8"
@@ -303,7 +303,7 @@ Those coordinates can then be turned into a basic program for the PB-700 by the 
 10LPRINT"D36.0,57.4,36.2,59.4,38.4,60.0,39.4,59.4"
 ```
 *and a lot of lines, until*
-```BASIC
+```basic
 135LPRINT"D44.8,50.4,46.8,48.8,48.4,49.4,49.2,50.2,49.8,52.0,51.0,52.6"
 136LPRINT"D51.0,52.6,51.2,53.2,49.2,54.6,45.6,54.8,43.8,54.2,42.6,53.0"
 137LPRINT"D42.6,53.0,44.4,51.8"
@@ -323,7 +323,7 @@ If the image is too large for my PB-700 (which has 12K of RAM! Yes, I have *2* O
 
 In the ``plotty.sh`` shell script, there is a ``--size 8000`` parameter to the invokation. This will limit the size of the generated programs so they easily fit into a 12KB PB-700. It can be made smaller to target a machine with 4KB of ram, or larger for the mythical fully loaded PB-700.
 
-```BASIC
+```basic
 echo -n "-- Generating BASIC programs:"
 python pb-700/json2basic.py --size 8000 < prog.json
 ```

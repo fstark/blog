@@ -3,7 +3,7 @@ title: Implementing Wozdle (Wozdle 3/3)
 description: "Making Wordle for the Apple1 3/3 : Implementation"
 date: 2023-10-22
 order: 1
-eleventyExcludeFromCollections: true
+eleventyExcludeFromCollections: false
 # permalink: wozdle-implementation
 tags:
   - 6502
@@ -63,7 +63,7 @@ I am not doing a primer on all the addressing modes of the 6502, just the ones t
 
 * Absolute, X. This will use a 16 bits address and add the content of the X register to the address value before using it. It is used when the operand is larger than 255. ``INC 5000,X`` will add X to 5000 and increment the value in the resulting location. In 3 bytes. And 7 cycles. And if you ask me, this is insanely fast. The CPU have to fetch an *extra* byte (hence an additional cycle), and to perform a 16 bits addition, which should also add an extra cycle. However, the 6502 is a little-endian CPU, so the instruction is stored this way: ``FE 88 13`` ($1388 is 5000). When we perform an addition, we start by the right most digit, in order to handle the carry properly. It is the same for CPUs. Being little endian, the cpu gets the ``$88`` before the ``$13``, so it can start the calculation one cycle earlier, and finish in 7 cycles instead of 8. If you don't find this *awesome*, you're in the wrong blog.
 
-This is used in wodle to address some of the static areas in memory, for instance ``LDA CHARROM,X``: access the Xth byte of the "character ROM" use din display the large texts.
+This is used in wozdle to address some of the static areas in memory, for instance ``LDA CHARROM,X``: access the Xth byte of the "character ROM" use din display the large texts.
 
 * Indirect Indexed. This will use the zero page to get an address, and then add the Y register to it. It is written ``ADC (65),Y``. This will load the content of memory addresses 65 and 66, add Y to it, and add the content of the memory pointed to it to the accumulator. For instance, if addresses 65 and 66 contained $8813 and the Y register 42, this would add the content of address location 5042 to A. In 2 bytes. And 5 or 6 cycles.
 

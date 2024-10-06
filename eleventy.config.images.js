@@ -47,7 +47,8 @@ module.exports = eleventyConfig => {
 // -----------------------------------------------------
 
 	eleventyConfig.addAsyncShortcode("blogimage", async function imageShortcode(src, caption, widths, sizes) {
-		let formats = [null];
+
+      let formats = [null];
 
 		let file = relativeToInputPath(this.page.inputPath, src);
 		let metadata = await eleventyImage(file, {
@@ -56,10 +57,14 @@ module.exports = eleventyConfig => {
 			outputDir: path.join(eleventyConfig.dir.output, "img"), // Advanced usage note: `eleventyConfig.dir` works here because we’re using addPlugin.
 		});
 
+    let filemeta = null;
+
         if (metadata.jpeg)
             filemeta = metadata.jpeg[0];
         else if (metadata.png)
-            filemeta = metadata.png[0];
+          filemeta = metadata.png[0];
+        else if (metadata.gif)
+          filemeta = metadata.gif[0];
         else
             console.log( metadata );
 
