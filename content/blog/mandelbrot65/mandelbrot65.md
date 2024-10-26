@@ -12,17 +12,13 @@ tags:
 
 {% blogimage "img/mandelbrot65.jpg", "Mandelbrot explorer on the Apple1" %}
 
-## Why?
+## A bit of context
 
-My friend SiliconInsider developed a 32K ROM/RAM expansion for my favorite computer, the Apple I. We spent some time filling it with utilities and demos, but ended up with two different implementations of Mastermind/Codebreaker. Since we only needed one, we removed the duplicate, which left us with some free space. So, we thought, why not include a Mandelbrot rendering? We wanted to use a standard BASIC version, but unfortunately, it required AppleSoft BASIC (likely due to its need for floating-point arithmetic), which isn’t included in this ROM.
+When I was a kid, I wrote a few very slow Mandelbrot programs on various machines, along with some sluggish versions of the Game of Life. I knew that some people learned assembly just to speed these up, and I always wanted to do the same, but at the time, it felt like an incredibly difficult task. Now, more than 40 years later, it makes me wonder: is my older self better than my younger self? Implementing this feels like a rite of passage.
 
-I searched for an assembly version but couldn’t find one, so I decided to write it myself. How hard could it be? (Spoiler: quite hard!)
+So, when my friend SiliconInsider mentioned he needed a demo for his Apple I ROM, it was the opportunity I had been waiting for my whole life. I had to do it—I had to write a Mandelbrot in 6502 assembly for the Apple I.
 
-## A link to the past
-
-When I was a kid, I wrote a few very slow Mandelbrot programs on various machines, along with several sluggish versions of the Game of Life. I knew some people learned assembly specifically to speed these up, and I always wanted to do the same, but it seemed like an incredibly difficult task at the time. Now, over 40 years later, it begs the question: is my older self better than my younger self? Implementing this feels like a kind of rite of passage.
-
-I have a budget of around 2K bytes of code and can use up to 8KB of memory. Let’s go!
+With a budget of around 2K bytes of code to fit in the ROM and access to 8KB of memory, it was time to get started!
 
 ## A bit on the Apple1
 
@@ -52,28 +48,28 @@ for (int line=0;line!=24;line++)
 }
 ```
 
-This is as simple as i gets, and the core loop is basically this. The devil is in the ``compute_iterations()``.
+This is as simple as i gets, and the core loop is basically this. The devil is, of course, in the ``compute_iterations()``.
 
 ## A bit of Mandelbrot
 
-The Mandelbrot calculation is both very complex and very simple. I mean, it’s quite simple, but it uses complex numbers.
+The Mandelbrot calculation is both very complex and very simple. By that I mean it is quite simple, but uses complex numbers.
 
 To compute the Mandelbrot set for the coordinate ``c``, you start with ``z = 0`` and perform the following operation in a loop: ``z = z^2 + c``. If the value "diverges," the point is outside the Mandelbrot set. If it doesn't diverge, the point is within the Mandelbrot set.
 
 {% blogimage "img/stupid-meme.jpg", "Probably not the best illustration" %}
 
-Determining if a series diverges in general is not trivial. However, in the case of the Mandelbrot set, if z becomes "large enough" (specifically, if its absolute value exceeds 2), you can conclude that the series diverge.
+Determining if a series diverges in general is not trivial. However, in the case of the Mandelbrot set, if ``z`` becomes "large enough" (specifically, if its absolute value exceeds 2), we can conclude that the series diverge.
 
-This means that the Mandelbrot set is black and white. A point is either "inside it", or "outside it".
+Note that this means that the Mandelbrot set is black and white. A point is either "inside it", or "outside it".
 
 {% blogimage "img/mandel-bw.jpg", "The real set is a bit boring" %}
 
-To get a nicer image, we display how many iteration counts it took to detect the divergence. Checking that the value does not "diverge" is much harder in theory, but pretty simple in practice: if we didn't "diverge" after a fixed number of iterations, we consider the point to be **in** the Mandelbrot set.
+To get a nicer image, we display a different character depending on how many iteration it took to detect the divergence. Checking that the value does not "diverge" is much harder in theory, but pretty simple in practice: if we didn't "diverge" after a fixed number of iterations, we consider the point to be **in** the Mandelbrot set.
 
 Saying "``z=z^2+c``", with ``z`` and ``c`` being complex numbers may not mean much to people not familiar with such concepts. But it is much simpler than it sounds. A complex number have two parts, a "real" one and an "imaginary" one. Think of them as the "real" one being on the horizontal axis, and the "imaginary" one being on the vertical axis. The numbers we know and love all lie on the horizontal axis. There is an imaginary number ``i`` that is just like ``1``, but on the vertical axis. It has the fascinating property that ``i^2=-1``. Armed with that, we can do the Mandelbrot calculation:
 
-The number ``z`` have a real part, ``zx`` and an imaginary part, ``zy``. We write this "``z = zx+i.zy``".
-The number ``c`` is the same, with ``cx`` and ``cy``. We write this "``c = cx+i.cy``".
+The number ``z`` have a real part, ``zx`` and an imaginary part, ``zy``. We write this "``z = zx + i.zy``".
+The number ``c`` is the same, with ``cx`` and ``cy``. We write this "``c = cx + i.cy``".
 
 We can now rewrite the Mandlbrot iteration forumla as "``znext = z^2 + c``" (the next value of ``z`` is the square of the current value of ``z`` plus ``c``).
 
@@ -144,7 +140,7 @@ To make matters worse, we are going to need to multiply numbers larger than 8 bi
 
 ## Another bit of math (to square things up)
 
-Earlier, we used the ``( a +b)^2`` identity. But there is the little sister, the ``(a - b)^2`` identity.
+Earlier, we used the ``(a + b)^2`` identity. But there is the little sister, the ``(a - b)^2`` identity.
 
 ``(a - b)^2 = a^2 - 2ab + b^2``
 
@@ -152,7 +148,7 @@ This is equivalent to:
 
 ``2ab = a^2 - b^2 - (a - b)^2``
 
-This is just extraordinary: we can compute ``2ab`` *with only squaring operations*!
+This is just extraordinary: we can compute ``2ab`` *with only square operations*!
 
 {% blogimage "img/mind-blown.gif", "It is insane that this works." %}
 
@@ -161,25 +157,25 @@ What is even more fantastic, is that this computes ``*2* ab``, and we need to co
 
 We now have our full plan. Instead of computing:
 
-``znextx = zx^2-zy^2+cx``
-``znexty = 2zx.zy+cy``
+``znextx = zx^2 - zy^2 + cx``
+``znexty = 2zx.zy + cy``
 
 we will compute:
 
-``znextx = zx^2-zy^2+cx``
-``znexty = zx^2+zy^2-(zx-zy)^2+cy``
+``znextx = zx^2 - zy^2 + cx``
+``znexty = zx^2 + zy^2 - (zx - zy)^2 + cy``
 
 ## A bit of bit counting for our numbers
 
-Before getting to the squaring operation, we need to decide on the representation of our numbers.
+Before getting to the implementation of the squaring operation, we need to decide on the representation of our numbers.
 
 As said before, Mandelbrot iterations "diverges" when they get "too big". It turns out that numbers between -4 and 4 are good enough. However, we may have internal operations that go over that (think about 3+3-3, which should be 3 but need an intermediary value of 6). Numbers between -8 and +8 should work in *most* of the cases.
 
 For my sanity I decided to implement fixed points numbers. In decimal, it is like if we decided to store 314 instead of 3.14 and have all of our numbers multiplied by 100.
 
-xxx insert picture of mecanical calculator xxx
+{% blogimage "img/pi.jpg", "This is how we used to keep track of the decimal point." %}
 
-Now, the question is how much *precision* do we need? As much as possible, but to answer that question, let's first solve our squaring implementation. We need the square of every number. Well, of every positive number. There is only 8KB of RAM available, so let's use 4K for the square table. Each entry takes two bytes. That 2048 entries. We can have only 2048 positive mnumbers(*). That's 11 bits. We need 3 bits for the integer value (0 to 7), so we have 8 bits left for the precision. We'll "multiply" all numbers by 256.
+Now, the question is how much *precision* do we need? As much as possible, but this will be limited by our squaring implementation. We need the square of every representable number. Well, of every representable positive number. There is only 8KB of RAM available, so let's use 4K for the square table. Each entry takes two bytes. That 2048 entries. So we are limited to only 2048 positive numbers. That's 11 bits. We need 3 bits for the integer value (0 to 7), so we have 8 bits left for the precision. We'll "multiply" all numbers by 256.
 
 ## A bit of 6502 bit twiddling
 
