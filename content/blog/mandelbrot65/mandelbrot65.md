@@ -229,9 +229,9 @@ The code is massively straightforward.
 
 In general, numbers are kept in the A and X registers (A for MSB, X for LSB). If the number is invalid, we return with the Carry flag set.
 
-Else, we compute the absolute value, set the 12th bit to 1 (so it looks like an address between 0x1000 and 0x1ffe), and use that to get the result from the square table.
+Otherwise, we compute the absolute value, set the 12th bit to 1 (so it looks like an address between 0x1000 and 0x1FFE), and use that to retrieve the result from the square table.
 
-How is the ABS computed?
+How is ABS computed?
 
 Trivially:
 
@@ -271,11 +271,11 @@ NEG:
 .)
 ```
 
-ABS test the bit 7 of the MSB, if sets, it negates the number.
+`ABS` tests bit 7 of the MSB, and if it's set, it negates the number.
 
-Negation is done by two complement (inverting the bits, and adding 1).
+Negation is done using two's complement (inverting the bits and adding 1).
 
-At the end, the Mandelbrot calculation, performed in the routine ``MANDEL1`` looks like:
+In the end, the Mandelbrot calculation, performed in the routine `MANDEL1`, looks like:
 
 ```asm6502
 	; STUFF
@@ -320,25 +320,24 @@ At the end, the Mandelbrot calculation, performed in the routine ``MANDEL1`` loo
 
 Absolutely straightforward.
 
-{% blogvideo "img/speed-comparison.webm", "We spend most of our time waiting to display the next character" %}
+{% blogvideo "img/speed-comparison.mp4", "The calculation is only a fraction of the time" %}
 
-On the above video, I modified the emulator on the right hand so it displays characters as fast as it can. It shows that most of the time of the program is spent waiting for the display subsystem of the Apple1 to be ready (again, only 1 character every 16ms).
-
+In the video above, I modified the emulator on the right-hand side to display characters as quickly as possible. It demonstrates that most of the program's time is spent waiting for the Apple I's display subsystem to be ready (since it can only display one character every 16ms).
 ## The overall code structure
 
-The code is really straightford and can be looked at in the [github repository](https://github.com/fstark/mandelbrot65)
+The code is quite straightforward and can be viewed in the [GitHub repository](https://github.com/fstark/mandelbrot65)
 
 The assembly code is fully documented [and can be accessed here](https://github.com/fstark/mandelbrot65/blob/main/mandelbrot65.asm).
 
 ``DRAWSET`` displays the Mandelbrot set on the screen. While long, it is quite straightforward. It calls ``ITER`` to compute and store in the ZP page variable ``IT`` the iteration count at the current position (stored unsurprisingly in the zero page variables ``X`` and ``Y``)
 
-The function ``CHARFROMIT`` is called and gets a character to display on screen, depending on the iteration. It uses the PALLETE table to get the character to display. At typicial palette looks like:
+The function `CHARFROMIT` is called to get a character to display on the screen, depending on the iteration. It uses the PALETTE table to determine the character to display. A typical palette looks like:
 
 ``..,''~~==+++:::;;;[[[//<<***??&&OO00XX# ``
 
-Characters at the beginning are close to black, and the more iterations it took to diverge, the lighter the character. The center of the Mandelbrot set is black however, increasing the contrast of the border.
+Characters at the beginning of the palette are close to black, and the more iterations it takes to diverge, the lighter the character becomes. The center of the Mandelbrot set remains black, which increases the contrast at the border.
 
-The maximum number of iterations depends on the zoom level, are stored at the address ``MAXITER`` and varies between 19 and 39.
+The maximum number of iterations depends on the zoom level, is stored at the address `MAXITER`, and varies between 19 and 39.
 
 ## Automatic zoom
 
