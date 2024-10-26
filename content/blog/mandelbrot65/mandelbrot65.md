@@ -191,7 +191,7 @@ Now, the question is how much *precision* do we need? As much as possible, but t
 
 It took me a while and a full rewrite to implement numbers properly as I first tried sign+magnitude representation. That was a pretty bad idea, because the 6502, like basically every other CPU, use the 2-complement representation. Sign+magnitude sounds awesome until you need to implement substraction.
 
-{% blogimage "img/sign-magnitude.jpg", "Sign+magnitude implementation on a two-complement CPU" %}
+{% blogimage "img/sign-magnitude-small.jpg", "Sign+magnitude implementation on a two-complement CPU" %}
 
 Anyway, 2-complement means that, for instance, that ``-2`` is ``254``. This may not seem natural, but is in fact something we use all the time, for instance, when counting minutes: 10 minutes before the hour is 50 minutes after. In French, we'd say "I'll meet you at minus 20" or "I'll mee you at 40" interchangeably. The 6502 does the same.
 
