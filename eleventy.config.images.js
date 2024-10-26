@@ -74,20 +74,26 @@ module.exports = eleventyConfig => {
 
     let markup = [];
 
-    if (filemeta.format === 'gif') {
-      markup.push('<div style="text-align: center;">');
-      markup.push('<img src="/' + destfile + '"/>');
-      markup.push('</div>');
-      return markup.join(" ");
+    image2display = filemeta.url;
+
+    if (filemeta.format === 'gif')
+    {
+        //  The images created for gifs are only the first frame...
+      image2display = "/"+destfile;
     }
     // console.log( file );
     // console.log( metadata );
-    markup.push('<figure><a href="/' + destfile + '" target="_blank"><img');
-    // markup.push( 'loading="lazy" decoding="async" src="'+filemeta.url+'" class="blogimage"')
-    markup.push('src="' + filemeta.url + '" class="blogimage"')
-    markup.push('></a><figcaption>' + caption + '</figcaption></figure>');
+    markup.push( '<div style="text-align: center;">' );
+    markup.push( '<figure>' );
+    markup.push( '<a href="/' + destfile + '" target="_blank">' );
+    markup.push( '<img');
+    markup.push( 'loading="lazy" decoding="async" src="'+image2display+'" class="blogimage"');
+    markup.push( '>' );
+    markup.push( '</a>' );
+    markup.push( '<figcaption>' + caption + '</figcaption>' );
+    markup.push( '</figure>' );
+    markup.push( '</div>' );
     return markup.join(" ");
-
   });
 
   eleventyConfig.addAsyncShortcode("blogvideo", async function imageShortcode(src, alt, widths, sizes) {

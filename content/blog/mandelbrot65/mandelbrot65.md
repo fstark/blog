@@ -1,9 +1,9 @@
 ---
-title: 6502 assembly Mandelbrot for Apple1
+title: 6502 assembly Mandelbrot for Apple1, bits by bits
 description: Designing and coding a 6502 assemble version of Mandelbrot for the Apple1
-date: 2024-10-03
+date: 2024-10-27
 order: 1
-eleventyExcludeFromCollections: true
+eleventyExcludeFromCollections: false
 tags:
   - coding
   - Apple1
@@ -14,9 +14,9 @@ tags:
 
 ## A bit of context
 
-When I was a kid, I wrote a few very slow Mandelbrot programs on various machines, along with some sluggish versions of the Game of Life. I knew that some people learned assembly just to speed these up, and I always wanted to do the same, but at the time, it felt like an incredibly difficult task. Now, more than 40 years later, it makes me wonder: is my older self better than my younger self? Implementing this feels like a rite of passage.
+When I was a kid, I wrote a few very slow Mandelbrot programs on various machines, along with some sluggish versions of the Game of Life. I knew that some people learned assembly just to speed these up, and I always wanted to do the same, but at the time, it felt like an incredibly difficult task. Now, more than 40 years later, it makes me wonder: is my older self better than my younger self? Implementing this felt like a rite of passage.
 
-So, when my friend SiliconInsider mentioned he needed a demo for his Apple I ROM, it was the opportunity I had been waiting for my whole life. I had to do it—I had to write a Mandelbrot in 6502 assembly for the Apple I.
+So, when my friend SiliconInsider mentioned he needed a demo for his Apple I ROM, it was the opportunity I had been waiting for my whole life. I had to do it—I had to write a Mandelbrot in 6502 assembly for the Apple I, which is my favorite computer!
 
 With a budget of around 2K bytes of code to fit in the ROM and access to 8KB of memory, it was time to get started!
 
@@ -48,7 +48,7 @@ for (int line=0;line!=24;line++)
 }
 ```
 
-This is as simple as i gets, and the core loop is basically this. The devil is, of course, in the ``compute_iterations()``.
+This is as simple as it gets, and the core loop is basically this. The devil is, of course, in the ``compute_iterations()``.
 
 ## A bit of Mandelbrot
 
@@ -64,35 +64,43 @@ Note that this means that the Mandelbrot set is black and white. A point is eith
 
 {% blogimage "img/mandel-bw.jpg", "The real set is a bit boring" %}
 
-To get a nicer image, we display a different character depending on how many iteration it took to detect the divergence. Checking that the value does not "diverge" is much harder in theory, but pretty simple in practice: if we didn't "diverge" after a fixed number of iterations, we consider the point to be **in** the Mandelbrot set.
+To get a nicer image, we display a different color (or character on the Apple1) depending on how many iteration it took to detect the divergence. Checking that the value does not "diverge" is much harder in theory, but pretty simple in practice: if we didn't "diverge" after a fixed number of iterations, we consider the point to be **in** the Mandelbrot set. One of the rare case where it is easier in practice than in theory.
+
+{% blogimage "img/mandel-color.png", "The color version is much more interesting" %}
 
 Saying "``z=z^2+c``", with ``z`` and ``c`` being complex numbers may not mean much to people not familiar with such concepts. But it is much simpler than it sounds. A complex number have two parts, a "real" one and an "imaginary" one. Think of them as the "real" one being on the horizontal axis, and the "imaginary" one being on the vertical axis. The numbers we know and love all lie on the horizontal axis. There is an imaginary number ``i`` that is just like ``1``, but on the vertical axis. It has the fascinating property that ``i^2=-1``. Armed with that, we can do the Mandelbrot calculation:
 
 The number ``z`` have a real part, ``zx`` and an imaginary part, ``zy``. We write this "``z = zx + i.zy``".
+
+Visually, it just means that ``z`` is a point in the plane, with the real part being the x coordinate, and the imaginary part being the y coordinate.
+
 The number ``c`` is the same, with ``cx`` and ``cy``. We write this "``c = cx + i.cy``".
 
 We can now rewrite the Mandlbrot iteration forumla as "``znext = z^2 + c``" (the next value of ``z`` is the square of the current value of ``z`` plus ``c``).
 
-``znextx + iznexty = (zx + izy)^2 + cx + i.cy``
+``znextx + i.znexty = (zx + izy)^2 + cx + i.cy``
 
 Using the classic identifiy "``(a + b)^2 = a^2 + 2ab + b^2``", we get:
 
-``znextx + iznexty = zx^2 + 2i.zx.zy + (i.zy)^2 + cx + i.cy``
+``znextx + i.znexty = zx^2 + 2i.zx.zy + (i.zy)^2 + cx + i.cy``
 
 Knowing that ``i^2 = -1``, we get:
 
-``znextx+iznexty = zx^2 + 2i.zx.zy - zy^2 + cx+i.cy``
+``znextx + i.znexty = zx^2 + 2i.zx.zy - zy^2 + cx+i.cy``
 
 Putting all the ``i`` together:
 
-``znextx + iznexty = (zx^2 - zy^2 + cx) + i.(2zx.zy + cy)``
+``znextx + i.znexty = (zx^2 - zy^2 + cx) + i.(2zx.zy + cy)``
 
 We then get the value of ``znextx`` and ``znexty``:
 
 ``znextx = zx^2 - zy^2 + cx``
+
 ``znexty = 2zx.zy + cy``  (please take a note at the ``2`` in ``2zx.zy``, it will come back to save us later)
 
-That's great. We just have to do that in 6502. Slight issue: we only deal with 8 bits values, and we don't have a multiplication...
+That's great. We just have to do that in 6502. Slight issue: we only deal with 8 bits values, and we don't have multiplication...
+
+{% blogimage "img/so-close.jpg", "We can do it" %}
 
 ## A bit of 6502
 
@@ -107,13 +115,13 @@ Say we want to multiply 10011101 (157) by 00101110 (46). We would do exactly lik
 *         00101110 (  46)
           --------
           00000000
-        1 0011101
-       10 011101
-      100 11101
-     0000 0000
-    10011 101
-   000000 00
-  0000000 0
++       1 0011101
++      10 011101
++     100 11101
++    0000 0000
++   10011 101
++  000000 00
++ 0000000 0
   ------- --------
 = 0011100 00110110 (7222)
 ```
@@ -126,12 +134,12 @@ Is there a better way? Well, we could pre-compute a multiplication table for 8bi
 
 ```
      9D ( 157)
-     2E (  46)
+*    2E (  46)
      --
-+  8 96
+   8 96       D*E = 6, carry is B, E*9 = 7E, 7E+B = 89, so E*9D = 896
 + 13 A
   -- --
-  1C 36
+= 1C 36
 ```
 
 To multiply two 8 bits number, we have to do 4 multiplications, a bunch of additions, and some 4 bits shifts.
@@ -153,16 +161,18 @@ This is just extraordinary: we can compute ``2ab`` *with only square operations*
 {% blogimage "img/mind-blown.gif", "It is insane that this works." %}
 
 We can pre-compute a table of squares and use it for instant results!
-What is even more fantastic, is that this computes ``*2* ab``, and we need to compute ``2zx.zy``. Life is beautiful again.
+What is even more fantastic, is that this computes **``2``** ``ab``, and we need to compute **``2``** ``zx.zy``. Life is beautiful again.
 
 We now have our full plan. Instead of computing:
 
 ``znextx = zx^2 - zy^2 + cx``
+
 ``znexty = 2zx.zy + cy``
 
 we will compute:
 
 ``znextx = zx^2 - zy^2 + cx``
+
 ``znexty = zx^2 + zy^2 - (zx - zy)^2 + cy``
 
 ## A bit of bit counting for our numbers
@@ -179,9 +189,11 @@ Now, the question is how much *precision* do we need? As much as possible, but t
 
 ## A bit of 6502 bit twiddling
 
-It took me a while and a full rewrite to implement numbers properly. At start, I wanted to go to a sign+magnitude representation, where the number is stored positive, and a single bit tells us if the number is positivie or negative. I assumed it would help me doing things like negating numbers or taking absolute values. I neglected the fact that it makes additions and substractions nightmares, because *this is not how the 6502 works*.
+It took me a while and a full rewrite to implement numbers properly as I first tried sign+magnitude representation. That was a pretty bad idea, because the 6502, like basically every other CPU, use the 2-complement representation. Sign+magnitude sounds awesome until you need to implement substraction.
 
-The 6502 is a 2-complement machine (like basically everything else). This means that, for instance, that ``-2`` is ``254``. This may not seem natural, but is in fact something we use all the time, for instance, when counting minutes: 10 minutes before the hour is 50 minutes after. In French, we'd say "I'll meet you at minus 20" or "I'll mee you at 40" interchangeably. The 6502 does the same.
+{% blogimage "img/sign-magnitude.jpg", "Sign+magnitude implementation on a two-complement CPU" %}
+
+Anyway, 2-complement means that, for instance, that ``-2`` is ``254``. This may not seem natural, but is in fact something we use all the time, for instance, when counting minutes: 10 minutes before the hour is 50 minutes after. In French, we'd say "I'll meet you at minus 20" or "I'll mee you at 40" interchangeably. The 6502 does the same.
 
 The numbers in Mandelbrot65 are 4.8 fixed point numbers. This means the can represent numbers between -8 and +8-precision, with precision being 1/256. They are stored shifted left by 1, and are stored in 16 bits, so they are extended to 7 bits for the integer part. At the end, numbers look like this:
 
@@ -269,7 +281,7 @@ NEG:
 
 `ABS` tests bit 7 of the MSB, and if it's set, it negates the number.
 
-Negation is done using two's complement (inverting the bits and adding 1).
+Negation is done [using two's complement](https://en.wikipedia.org/wiki/Two's_complement) (inverting the bits and adding 1).
 
 In the end, the Mandelbrot calculation, performed in the routine `MANDEL1`, looks like:
 
@@ -346,7 +358,7 @@ To determine where to zoom, there are iteration trigger values. For instance, an
 
 Randomly choosing a point is an interesting challenge in itself. We use a pseudo-random generator, that is seeded by the wait at the begining, when the user is asked to ``PRESS ANY KEY``.
 
-{% blogimage "img/press-any-key.jpg", "'Please Generate Some Entropy' would have been more correct, but slightly more confising for the user..." %}
+{% blogimage "img/press-any-key.jpg", "'Please Generate Some Entropy' would have been more correct, but slightly more confusing for the user..." %}
 
 Picking a random value is pretty simple. We don't need a lot of entropy, so 8 bits are good enough. Rotating the seed left and XOR'ing it with ``00011101`` if the high bit was ``1`` is enough to get an acceptable random value (lifted from [the Commodore 64](https://www.codebase64.org/doku.php?id=base:small_fast_8-bit_prng)). Any other algorithm would work equally well, or better.
 
@@ -402,4 +414,24 @@ DONE:
 .)
 ```
 
+The assembly is a bit hard to read, but it is just a conveoluted way to do ``random() % FREQ == 1`` (by decrementing ``FREQ``).
+
 Yes, it is a loop, it is costly, and could also be done by substracting FREQ from the random number until it is negative, but keep in mind that it is only used when we have a zoom candidate. There aren't than many of them.
+
+## Final bits
+
+There isn't much more to say. The code is pretty straightforward, and heavily documented. It was a lot of fun to write, and hopefully will make a cool demo for your Apple1.
+
+It is fascinating to think that, while the Apple1 was released in 1976, the first Mandelbrot set was only draw in 1978.
+
+{% blogimage "img/original-mandelbrot.jpg", "First Mandelbrot, circa 1978" %}
+
+It only got his name and first high-resolution visualisation in 1980, by Benoit Mandelbrot, then at IBM.
+
+In 1982, Mandelbrot published his seminal book "The Fractal Geometry of Nature", which made the Mandelbrot set famous.
+
+{% blogimage "img/original-mandelbrot2.jpg", "The first high-resolution image of the shy Mandelbrot set" %}
+
+Hope you had fun with this dive into 6502 assembly and the Mandelbrot set. I sure did!
+
+You can find the source code on [GitHub](https://github.com/fstark/mandelbrot65).
