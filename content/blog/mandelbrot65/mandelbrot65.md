@@ -14,11 +14,15 @@ tags:
 
 ## A bit of context
 
-When I was a kid, I wrote a few very slow Mandelbrot programs on various machines, along with some sluggish versions of the Game of Life. I knew that some people learned assembly just to speed these up, and I always wanted to do the same, but at the time, it felt like an incredibly difficult task. Now, more than 40 years later, it makes me wonder: is my older self better than my younger self? Implementing this felt like a rite of passage.
+When I was a kid, I wrote a few very slow low-res AppleSoft BASIC Mandelbrot programs on the school's Apple II, along with some sluggish versions of the Game of Life. I knew that some people learned assembly just to speed these up, and I always wanted to do the same, but at the time, it felt like an incredibly difficult task.
 
-So, when my friend SiliconInsider mentioned he needed a demo for his Apple I ROM, it was the opportunity I had been waiting for my whole life. I had to do it—I had to write a Mandelbrot in 6502 assembly for the Apple I, which is my favorite computer!
+So, when more than 40 years later my friend SiliconInsider mentioned he needed a demo for his Apple I ROM, it was the opportunity I had been waiting for my whole life. I had to do it — I had to write a Mandelbrot in 6502 assembly for the Apple I!
 
-With a budget of around 2K bytes of code to fit in the ROM and access to 8KB of memory, it was time to get started!
+{% blogimage "img/ptsd.jpg", "You never know when you'll get a JSR from the past" %}
+
+Implementing this felt like a necessary rite of passage: is my older self better than my younger self? Can I increase my self-worth with the help of all available modern resources to make a point nobody cares for? Let's find out!
+
+With a budget of around 2K bytes of code to fit in the ROM and access to 8KB of memory, it was time to get started on getting Mandelbrot on my favorite computer.
 
 ## A bit on the Apple1
 
@@ -96,7 +100,9 @@ We then get the value of ``znextx`` and ``znexty``:
 
 ``znextx = zx^2 - zy^2 + cx``
 
-``znexty = 2zx.zy + cy``  (please take a note at the ``2`` in ``2zx.zy``, it will come back to save us later)
+``znexty = 2zx.zy + cy``
+
+(please take a note at the **``2``** in **``2``** ``zx.zy``, it will come back to save us later)
 
 That's great. We just have to do that in 6502. Slight issue: we only deal with 8 bits values, and we don't have multiplication...
 
@@ -130,7 +136,7 @@ We need to do 16 bits additions, one for every bit set in the first number, and 
 
 {% blogimage "img/multiplication-is-adding.jpg", "We will not use Woody's method" %}
 
-Is there a better way? Well, we could pre-compute a multiplication table for 8bits, but that would be 64K of data, the full address space of the 6502. Maybe a 4bitsx4bits table? That would be more manageable, and we would do a pure hexadecimal multipliation:
+Is there a better way? Well, we could pre-compute a multiplication table for 8bits, but that would be 64K of data, the full address space of the 6502. Maybe a 4bits x 4bits table? That would be more manageable, and we would do a pure hexadecimal multipliation:
 
 ```
      9D ( 157)
@@ -191,9 +197,11 @@ Now, the question is how much *precision* do we need? As much as possible, but t
 
 It took me a while and a full rewrite to implement numbers properly as I first tried sign+magnitude representation. That was a pretty bad idea, because the 6502, like basically every other CPU, use the 2-complement representation. Sign+magnitude sounds awesome until you need to implement substraction.
 
-{% blogimage "img/sign-magnitude-small.jpg", "Sign+magnitude implementation on a two-complement CPU" %}
+{% blogimage "img/sign-magnitude-small.jpg", "Sign+magnitude subsctraction on a two-complement CPU" %}
 
-Anyway, 2-complement means that, for instance, that ``-2`` is ``254``. This may not seem natural, but is in fact something we use all the time, for instance, when counting minutes: 10 minutes before the hour is 50 minutes after. In French, we'd say "I'll meet you at minus 20" or "I'll mee you at 40" interchangeably. The 6502 does the same.
+Anyway, 2-complement means that, for instance, that ``-2`` is ``254``. This may not seem natural, but is in fact something we use all the time, for instance, when counting minutes: 10 minutes before the hour is 50 minutes after. In French, we'd say *"I'll meet you at minus 20"* or *"I'll meet you at 40"* interchangeably. The 6502 does the same. I suspect the 6502 is a bit French.
+
+{% blogimage "img/6502-flags.gif", "The 6502 even has a white flag 'reserved for future use'." %}
 
 The numbers in Mandelbrot65 are 4.8 fixed point numbers. This means the can represent numbers between -8 and +8-precision, with precision being 1/256. They are stored shifted left by 1, and are stored in 16 bits, so they are extended to 7 bits for the integer part. At the end, numbers look like this:
 
@@ -217,19 +225,24 @@ Here is the SQUARE assembly function:
 ;-----------------------------------------------------------------------------
 SQUARE:
 .(
-	JSR ISNUMBER		; Not a number or overflow ?
-	BCS DONE
 	JSR ABS				; Absolute value
+	CMP #8
+	BPL DONENAN			; Larger than 4, we would overflow the table
 	ORA #$10			; Set square table address bit (0x1000)
 	STX PTR
 	STA PTR+1
 	LDY #0
 	LDA (PTR),Y			; Get LSB of the square
+	CMP #1				; 1 in the LSB is the NAN indicator
+	BEQ DONENAN			; (as all our numbers are even)
 	TAX
 	INY
 	LDA (PTR),Y			; Get MSB of the square
-DONE:
+	CLC
 	RTS
+DONENAN:
+	SEC
+	RTS	
 .)
 ```
 
@@ -239,7 +252,11 @@ In general, numbers are kept in the A and X registers (A for MSB, X for LSB). If
 
 Otherwise, we compute the absolute value, set the 12th bit to 1 (so it looks like an address between 0x1000 and 0x1FFE), and use that to retrieve the result from the square table.
 
-How is ABS computed?
+Fortunately we don't have to use a multiplication to compute the square table. It is filled at the start of the program, using the property that ``(a + 1)^2 = a^2 + 2a + 1``. We start with 0, and add 1, 3, 5, 7, 9, etc. to fill the table. It is slightly more complicated as we are filling the table for non integer numbers (ie: 0, 1/256, 2/256, etc.), but the principle is the same.
+
+See the ``FILLSQUARES`` assembly routine in the source code.
+
+## How is ABS computed?
 
 Trivially:
 
@@ -331,6 +348,7 @@ Absolutely straightforward.
 {% blogvideo "img/speed-comparison.mp4", "The calculation is only a fraction of the time" %}
 
 In the video above, I modified the emulator on the right-hand side to display characters as quickly as possible. It demonstrates that most of the program's time is spent waiting for the Apple I's display subsystem to be ready (since it can only display one character every 16ms).
+
 ## The overall code structure
 
 The code is quite straightforward and can be viewed in the [GitHub repository](https://github.com/fstark/mandelbrot65)
@@ -433,5 +451,7 @@ In 1982, Mandelbrot published his seminal book "The Fractal Geometry of Nature",
 {% blogimage "img/original-mandelbrot2.jpg", "The first high-resolution image of the shy Mandelbrot set" %}
 
 Hope you had fun with this dive into 6502 assembly and the Mandelbrot set. I sure did!
+
+*My younger self was not available for comments.*
 
 You can find the source code on [GitHub](https://github.com/fstark/mandelbrot65).
