@@ -1,6 +1,6 @@
 ---
 title: 6502 assembly Mandelbrot for Apple1, bits by bits
-description: Designing and coding a 6502 assemble version of Mandelbrot for the Apple1
+description: Designing and coding a 6502 assembly version of Mandelbrot for the Apple1
 date: 2024-10-27
 order: 1
 eleventyExcludeFromCollections: false
@@ -56,7 +56,7 @@ This is as simple as it gets, and the core loop is basically this. The devil is,
 
 ## A bit of Mandelbrot
 
-The Mandelbrot calculation is both very complex and very simple. By that I mean it is quite simple, but uses complex numbers.
+The Mandelbrot calculation is both complex and very simple. By that I mean it is quite simple, but uses complex numbers.
 
 To compute the Mandelbrot set for the coordinate ``c``, you start with ``z = 0`` and perform the following operation in a loop: ``z = z^2 + c``. If the value "diverges," the point is outside the Mandelbrot set. If it doesn't diverge, the point is within the Mandelbrot set.
 
@@ -72,7 +72,7 @@ To get a nicer image, we display a different color (or character on the Apple1) 
 
 {% blogimage "img/mandel-color.png", "The color version is much more interesting" %}
 
-Saying "``z=z^2+c``", with ``z`` and ``c`` being complex numbers may not mean much to people not familiar with such concepts. But it is much simpler than it sounds. A complex number have two parts, a "real" one and an "imaginary" one. Think of them as the "real" one being on the horizontal axis, and the "imaginary" one being on the vertical axis. The numbers we know and love all lie on the horizontal axis. There is an imaginary number ``i`` that is just like ``1``, but on the vertical axis. It has the fascinating property that ``i^2=-1``. Armed with that, we can do the Mandelbrot calculation:
+Saying "``z = z^2 + c``", with ``z`` and ``c`` being complex numbers may not mean much to people not familiar with such concepts. But it is much simpler than it sounds. A complex number have two parts, a "real" one and an "imaginary" one. Think of them as the "real" one being on the horizontal axis, and the "imaginary" one being on the vertical axis. The numbers we know and love all lie on the horizontal axis. There is an imaginary number ``i`` that is just like ``1``, but on the vertical axis. It has the fascinating property that ``i^2 = -1``. Armed with that, we can do the Mandelbrot calculation:
 
 The number ``z`` have a real part, ``zx`` and an imaginary part, ``zy``. We write this "``z = zx + i.zy``".
 
@@ -175,7 +175,7 @@ We now have our full plan. Instead of computing:
 
 ``znexty = 2zx.zy + cy``
 
-we will compute:
+we can replace ``2zx.zy`` by ``zx^2 + zy^2 - (zx - zy)^2`` and compute:
 
 ``znextx = zx^2 - zy^2 + cx``
 
@@ -197,21 +197,33 @@ Now, the question is how much *precision* do we need? As much as possible, but t
 
 It took me a while and a full rewrite to implement numbers properly as I first tried sign+magnitude representation. That was a pretty bad idea, because the 6502, like basically every other CPU, use the 2-complement representation. Sign+magnitude sounds awesome until you need to implement substraction.
 
-{% blogimage "img/sign-magnitude-small.jpg", "Sign+magnitude subsctraction on a two-complement CPU" %}
+{% blogimage "img/sign-magnitude-small.jpg", "Sign+magnitude substraction on a two-complement CPU" %}
 
 Anyway, 2-complement means that, for instance, that ``-2`` is ``254``. This may not seem natural, but is in fact something we use all the time, for instance, when counting minutes: 10 minutes before the hour is 50 minutes after. In French, we'd say *"I'll meet you at minus 20"* or *"I'll meet you at 40"* interchangeably. The 6502 does the same. I suspect the 6502 is a bit French.
 
-{% blogimage "img/6502-flags.gif", "The 6502 even has a white flag 'reserved for future use'." %}
+{% blogimage "img/6502-flags.gif", "The 6502 is so French that it even has a white flag 'reserved for future use'." %}
 
-The numbers in Mandelbrot65 are 4.8 fixed point numbers. This means the can represent numbers between -8 and +8-precision, with precision being 1/256. They are stored shifted left by 1, and are stored in 16 bits, so they are extended to 7 bits for the integer part. At the end, numbers look like this:
+The numbers in Mandelbrot65 are 4.8 fixed point numbers. This means they can represent numbers between -8 and +8-precision, with precision being 1/256. They are stored shifted left by 1, and are stored in 16 bits, so they are extended to 7 bits for the integer part. At the end, numbers look like this:
 
 ``iiii iiif ffff fff0``
 
 I don't really care about the first 3 'i' (they are 0 for positive, and 1 for negative). There is an opportunity for more precision, there.
 
+Let's look at the number 0x0648:
+
+```
+XXX0 0110 0100 100X  == 0x0648
+      ^^   ^   ^
+       |   |   +-- 1/64
+       |   +------ 1/8
+       +---------- 3
+```
+
+``0000 0011 0010 1000`` would be our best approximation of π (``3 + 1/8 + 1/64 = 3.140625``)
+
 For the square table, I will use the memory between ``0x1000`` (``0001 0000 0000 0000``) and ``0x1fff`` (``0001 1111 1111 1111``).
 
-So a positive number like ``0000 iiif ffff fff0`` will have its square stored at ``0001 iiif ffff fff0`` (least significant byte) and ``0001 iiif ffff fff1`` (most significant byte)
+So a positive number less than 8 like ``0000 iiif ffff fff0`` will have its square stored at ``0001 iiif ffff fff0`` (least significant byte) and ``0001 iiif ffff fff1`` (most significant byte)
 
 Here is the SQUARE assembly function:
 
@@ -226,8 +238,8 @@ Here is the SQUARE assembly function:
 SQUARE:
 .(
 	JSR ABS				; Absolute value
-	CMP #8
-	BPL DONENAN			; Larger than 4, we would overflow the table
+	CMP #16				; Really 8<<1
+	BPL DONENAN			; Larger than 8, we would overflow the table
 	ORA #$10			; Set square table address bit (0x1000)
 	STX PTR
 	STA PTR+1
@@ -355,7 +367,7 @@ The code is quite straightforward and can be viewed in the [GitHub repository](h
 
 The assembly code is fully documented [and can be accessed here](https://github.com/fstark/mandelbrot65/blob/main/mandelbrot65.asm).
 
-``DRAWSET`` displays the Mandelbrot set on the screen. While long, it is quite straightforward. It calls ``ITER`` to compute and store in the ZP page variable ``IT`` the iteration count at the current position (stored unsurprisingly in the zero page variables ``X`` and ``Y``)
+``DRAWSET`` displays the Mandelbrot set on the screen. While long, it is quite straightforward. It calls ``ITER`` to compute and store in the ZP page variable ``IT`` the iteration count at the current position (stored unsurprisingly in the zero page variables ``X`` and ``Y`` -- don't mix them up with the ``X`` and ``Y`` registers).
 
 The function `CHARFROMIT` is called to get a character to display on the screen, depending on the iteration. It uses the PALETTE table to determine the character to display. A typical palette looks like:
 
@@ -372,7 +384,7 @@ The maximum number of iterations depends on the zoom level, is stored at the add
 To make the display more enjoyable, we auto-zoom 4 seconds after having displayed the image. The are 5 zoom levels, each roughly twice as zoomed as the previous one.
 
 The Mandelbrot set is much more interesting close to the border of the set.
-To determine where to zoom, there are iteration trigger values. For instance, any point of the original zoom where it took between 15 and 19 iterations to diverge may be choosen as the center of the next zoom. Those zoom-level dependant values are stored in the ``ZOOMTRIGGERMIN`` and ``ZOOMTRIGGERMAX`` tables.
+To determine where to zoom, there are iteration trigger values. For instance, any point of the original zoom where it took between 15 and 19 iterations to diverge can be choosen as the center of the next zoom. Those zoom-level dependant values are stored in the ``ZOOMTRIGGERMIN`` and ``ZOOMTRIGGERMAX`` tables.
 
 Randomly choosing a point is an interesting challenge in itself. We use a pseudo-random generator, that is seeded by the wait at the begining, when the user is asked to ``PRESS ANY KEY``.
 
@@ -432,7 +444,7 @@ DONE:
 .)
 ```
 
-The assembly is a bit hard to read, but it is just a conveoluted way to do ``random() % FREQ == 1`` (by decrementing ``FREQ``).
+The assembly is a bit hard to read, but it is just a convoluted way to do ``random() % FREQ == 1`` (by decrementing ``FREQ``).
 
 Yes, it is a loop, it is costly, and could also be done by substracting FREQ from the random number until it is negative, but keep in mind that it is only used when we have a zoom candidate. There aren't than many of them.
 
