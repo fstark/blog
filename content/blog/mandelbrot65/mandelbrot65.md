@@ -160,7 +160,7 @@ Earlier, we used the ``(a + b)^2`` identity. But there is the little sister, the
 
 This is equivalent to:
 
-``2ab = a^2 - b^2 - (a - b)^2``
+``2ab = a^2 + b^2 - (a - b)^2``
 
 This is just extraordinary: we can compute ``2ab`` *with only square operations*!
 
