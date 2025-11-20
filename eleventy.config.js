@@ -10,6 +10,9 @@ const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginDrafts = require("./eleventy.config.drafts.js");
 const pluginImages = require("./eleventy.config.images.js");
 const pluginDigression = require("./eleventy.config.digression.js");
+const pluginBlogImage = require("./eleventy.config.blogimage.js");
+const pluginBlogVideo = require("./eleventy.config.blogvideo.js");
+const pluginSocial = require("./eleventy.config.social.js");
 
 
 
@@ -43,6 +46,9 @@ module.exports = function(eleventyConfig) {
 	eleventyConfig.addPlugin(pluginDrafts);
 	eleventyConfig.addPlugin(pluginImages);
 	eleventyConfig.addPlugin(pluginDigression);
+	eleventyConfig.addPlugin(pluginBlogImage);
+	eleventyConfig.addPlugin(pluginBlogVideo);
+	eleventyConfig.addPlugin(pluginSocial);
 
 	// Official plugins
 	eleventyConfig.addPlugin(pluginRss);

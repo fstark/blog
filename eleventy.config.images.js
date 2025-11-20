@@ -1,11 +1,7 @@
 const path = require("path");
 const eleventyImage = require("@11ty/eleventy-img");
-const fs = require('fs');
-const markdownIt = require("markdown-it");
 
 module.exports = eleventyConfig => {
-  // Initialize markdown-it for processing captions
-  const md = markdownIt({ html: true });
   function relativeToInputPath(inputPath, relativeFilePath) {
     let split = inputPath.split("/");
     split.pop();
@@ -31,7 +27,7 @@ module.exports = eleventyConfig => {
     let metadata = await eleventyImage(file, {
       widths: widths || ["auto"],
       formats,
-      outputDir: path.join(eleventyConfig.dir.output, "img"), // Advanced usage note: `eleventyConfig.dir` works here because we’re using addPlugin.
+      outputDir: path.join(eleventyConfig.dir.output, "img"), // Advanced usage note: `eleventyConfig.dir` works here because we're using addPlugin.
     });
 
     // TODO loading=eager and fetchpriority=high
@@ -44,103 +40,4 @@ module.exports = eleventyConfig => {
     return eleventyImage.generateHTML(metadata, imageAttributes);
   });
 
-  // -----------------------------------------------------
-  //  Inserting an image in the blog flow
-  // -----------------------------------------------------
-
-  eleventyConfig.addAsyncShortcode("blogimage", async function imageShortcode(src, caption, widths, sizes) {
-
-    let formats = [null];
-
-    let file = relativeToInputPath(this.page.inputPath, src);
-    let metadata = await eleventyImage(file, {
-      widths: [640],
-      formats,
-      outputDir: path.join(eleventyConfig.dir.output, "img"), // Advanced usage note: `eleventyConfig.dir` works here because we’re using addPlugin.
-    });
-
-    let filemeta = null;
-
-    if (metadata.jpeg)
-      filemeta = metadata.jpeg[0];
-    else if (metadata.png)
-      filemeta = metadata.png[0];
-    else if (metadata.gif)
-      filemeta = metadata.gif[0];
-    else
-      console.log(metadata);
-
-    const destfile = "img/large-" + filemeta.filename;
-
-    fs.copyFile(file, path.join(eleventyConfig.dir.output, destfile), (err) => { });
-    // console.log( path.join(eleventyConfig.dir.output, destfile) );
-
-    let markup = [];
-
-    image2display = filemeta.url;
-
-    if (filemeta.format === 'gif') {
-      //  The images created for gifs are only the first frame...
-      image2display = "/" + destfile;
-    }
-    // console.log( file );
-    // console.log( metadata );
-
-    // Process caption as markdown to support links and other markdown syntax
-    const renderedCaption = md.renderInline(caption);
-
-    markup.push('<div style="text-align: center;">');
-    markup.push('<figure>');
-    markup.push('<a href="/' + destfile + '" target="_blank">');
-    markup.push('<img');
-    markup.push('loading="lazy" decoding="async" src="' + image2display + '" class="blogimage"');
-    markup.push('>');
-    markup.push('</a>');
-    markup.push('<figcaption>' + renderedCaption + '</figcaption>');
-    markup.push('</figure>');
-    markup.push('</div>');
-    return markup.join(" ");
-  });
-
-  eleventyConfig.addAsyncShortcode("blogvideo", async function imageShortcode(src, alt, widths, sizes) {
-
-    let file = relativeToInputPath(this.page.inputPath, src);
-    const destfile = path.join(eleventyConfig.dir.output, src);
-
-    fs.copyFile(file, destfile, (err) => { });
-
-    return '<video controls width="100%"><source src="/' + src + '" type="video/mp4">Your browser does not support the video tag.</video>';
-  });
-
-  eleventyConfig.addAsyncShortcode("twitter", async function imageShortcode(handle) {
-    console.log(handle);
-    return '<a href="https://www.twitter.com/' + handle + '" target="_blank">' + handle + '</a>';
-  });
-
-  eleventyConfig.addAsyncShortcode("mastodon", async function imageShortcode(server, handle) {
-    console.log(handle);
-    return '<a href="https://' + server + '/' + handle + '" target="_blank">' + handle + '</a>';
-  });
-
 };
-
-/*
-function generateHTML(metadata, attributes = {}, options = {}) {
-  let isInline = options.whitespaceMode !== "block";
-  let markup = [];
-  let obj = generateObject(metadata, attributes, options);
-  for(let tag in obj) {
-    if(!Array.isArray(obj[tag])) {
-      markup.push(mapObjectToHTML(tag, obj[tag]));
-    } else {
-      markup.push(`<${tag}>`);
-      for(let child of obj[tag]) {
-        let childTagName = Object.keys(child)[0];
-        markup.push((!isInline ? "  " : "") + mapObjectToHTML(childTagName, child[childTagName]));
-      }
-      markup.push(`</${tag}>`);
-    }
-  }
-  return markup.join(!isInline ? "\n" : "");
-}
-*/
