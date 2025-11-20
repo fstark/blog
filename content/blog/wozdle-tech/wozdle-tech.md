@@ -169,3 +169,15 @@ Note the way an multi-bytes addition is performed on the 6502: here we are addin
 
 -> large letters
 -> Astuce du 'zzzzz' en dernier mot ajoute a la liste de mots.
+
+
+Previous end of the first wozdle post
+
+
+They are used at two different place:
+
+* At the begining, we pick a number between 1 and 2309. This is the guess the player must find. We then scan the vocabulary list and the answer bit map at the same time, ending when we have seen the right numbers of '1' in the bitmap. This gives the number associated to the word choosen by the computer, which we decode as 5 ASCII characters.
+
+* When the user picks a word, we convert it to a number and scan the vocabulary list until we find it, or the end. This enables us to validate if a word is in the vocabulary or not
+
+We're not looking at the assembly this time, 

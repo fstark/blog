@@ -3,7 +3,7 @@ title: Designing the UX of Wozdle (Wozdle 2/3)
 description: "Making Wordle for the Apple1 2/3 : UX"
 date: 2023-10-21
 order: 1
-eleventyExcludeFromCollections: true
+eleventyExcludeFromCollections: false
 tags:
   - apple1
   - wozdle
@@ -13,12 +13,13 @@ tags:
 
 A big part of the fun of developping for vintage computers is that we operate within a set of hard constraints. The graphical rendering is often one of the most stringent one. In the case of the Apple 1, here are the list of constraints that impacts the Wozdle design. Most are not apparent when looking at a screenshot.
 
-XXX insert an hex dump of an apple 1 and one of an apple 2.
-
 {% blogimage "img/apple1-hex.jpg", "This is an hex dump on an Apple 1" %}
+
 {% blogimage "img/apple2-hex.jpg", "And one on an Apple ][" %}
 
-Note: the legend of those images may have been swapped.
+{% digression "Note:" %}
+The legend of those images above may have been swapped.
+{% enddigression %}
 
 ### The constraints
 

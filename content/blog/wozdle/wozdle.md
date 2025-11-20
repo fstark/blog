@@ -200,6 +200,10 @@ We went from 51 bytes down to 25, a more than 50% gain.
 
 With these two compressions (representing words on 25 bits and encoding the difference of the sorted list), the 12947 words of the vocabulary are now encoded in 17903 bytes and the project become possible!
 
+{% digression %}
+And we saved about the 20K we expected to win by forcing the order! [All Hail Shannon!](https://en.wikipedia.org/wiki/Claude_Shannon)
+{% enddigression %}
+
 {% blogimage "img/victory.jpg", "Actual picture of the ah-ah moment" %}
 
 ### Encoding the 2309 words answer list
@@ -216,10 +220,6 @@ The most promising one was to add bit at the end of the vocabulary encoding, so 
 
 While not extremely efficient for traversal, those two data structures are the core of the Wozdle implementation.
 
-They are used at two different place:
+Technically, we know we can do it. But is it worth it? Can we create something playable on an Apple1?
 
-* At the begining, we pick a number between 1 and 2309. This is the guess the player must find. We then scan the vocabulary list and the answer bit map at the same time, ending when we have seen the right numbers of '1' in the bitmap. This gives the number associated to the word choosen by the computer, which we decode as 5 ASCII characters.
-
-* When the user picks a word, we convert it to a number and scan the vocabulary list until we find it, or the end. This enables us to validate if a word is in the vocabulary or not
-
-We're not looking at the assembly this time, 
+Next time, we look at the Wozdle user experience design.

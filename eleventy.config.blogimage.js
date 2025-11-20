@@ -67,4 +67,73 @@ module.exports = eleventyConfig => {
     markup.push('</div>');
     return markup.join(" ");
   });
+
+  // -----------------------------------------------------
+  //  Placeholder image for future/missing images
+  // -----------------------------------------------------
+
+  eleventyConfig.addShortcode("placeholder", function(description, caption) {
+    // Create an SVG placeholder with the same dimensions as blogimage (640px)
+    const width = 640;
+    const height = 480;
+    
+    // Process caption as markdown to support links and other markdown syntax
+    const renderedCaption = md.renderInline(caption);
+    
+    // Wrap text at word boundaries (40-50 chars per line)
+    function wrapText(text, maxCharsPerLine = 45) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = '';
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (testLine.length > maxCharsPerLine && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      return lines;
+    }
+    
+    const lines = wrapText(description);
+    const lineHeight = 28;
+    const fontSize = 24;
+    const totalHeight = lines.length * lineHeight;
+    const startY = (height - totalHeight) / 2 + fontSize;
+    
+    // Generate text elements for each line
+    const textElements = lines.map((line, index) => {
+      const y = startY + (index * lineHeight);
+      return `<text x="${width/2}" y="${y}" text-anchor="middle" font-family="sans-serif" font-size="${fontSize}" fill="#666">${line}</text>`;
+    }).join('\n      ');
+    
+    // Generate SVG with rectangle, diagonal lines, and centered multi-line text
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <rect width="${width}" height="${height}" fill="#f0f0f0" stroke="#999" stroke-width="2"/>
+      <line x1="0" y1="0" x2="${width}" y2="${height}" stroke="#ccc" stroke-width="2"/>
+      <line x1="${width}" y1="0" x2="0" y2="${height}" stroke="#ccc" stroke-width="2"/>
+      ${textElements}
+    </svg>`;
+    
+    // Use base64 encoding for the SVG to avoid separate file
+    const base64svg = Buffer.from(svg).toString('base64');
+    const dataUri = `data:image/svg+xml;base64,${base64svg}`;
+    
+    let markup = [];
+    markup.push('<div style="text-align: center;">');
+    markup.push('<figure>');
+    markup.push('<img');
+    markup.push(`src="${dataUri}" class="blogimage" alt="${description}"`);
+    markup.push('>');
+    markup.push('<figcaption>' + renderedCaption + '</figcaption>');
+    markup.push('</figure>');
+    markup.push('</div>');
+    return markup.join(" ");
+  });
 };

@@ -24,7 +24,7 @@ Sometimes people are a bit confused, and over-hype [wikipedia articles](https://
 Also, don't get me started on the [Q1](https://en.wikipedia.org/wiki/Q1_Corporation).
 {% enddigression %}
 
-# So rare only two exist in private collection
+# So rare only two exist in private collections
 
 I happen to have a Portal, although I did not pay 10K for it.
 
@@ -38,44 +38,38 @@ However, we can admit that if only 3 or 6 or even 20 exist, it is still an extra
 
 {% blogimage "img/cocorico.png", "So proud of being French right now" %}
 
-Well, if you discount the Xerox that existed 7 years before:
 
-{ % blogimage "img/xerox.jpg", "Sorry I am the PARC, I invented everything you use" % }
+Wait a minute, this first portable computer was released in September 1980?
 
-Okaay, I am excessive, the wikipedia states "the first successul portable computer". The success of the Portal was so wild that I was able to track two small 5 lines articles in French magazines from the time. There are no numbers about the sales (more on that later), but one of the model I saw had a serial number in the 2000 range. So a few thousands at best.
+I wonder if there have been any portable computers before...
 
-Sure the [IBM 5100](https://en.wikipedia.org/wiki/IBM_5100) that came out 5 years before.
+{% blogimage "img/mcm.png", "Like the [MCM/70](https://en.wikipedia.org/wiki/MCM/70), in 1974..." %}
 
-{% blogimage "img/ibm-5100.png", "Sorry, I am IBM, I patented everything you use" %}
+{% blogimage "img/ibm-5100.png", "1975. [IBM 5100](https://en.wikipedia.org/wiki/IBM_5100). Sorry, I am IBM, I patented everything you use" %}
 
-But was it successful? Well, there are more than "3 left in the world". And there also were 5110 and 5120. It is a safe bet that with an IBM-baked worlwide release of a general purpose computer it probably beat the French "Portal CCMC".
+{% blogimage "img/xerox-notetaker.png", "1978. Sorry I am the PARC, I invented everything you use today" %}
 
-But that 5100 is really really good looking. Really reminds me of the later [HP85 series](https://en.wikipedia.org/wiki/HP_Series_80
-).
+{% blogimage "img/scrib.png", "1978. Sorry, I am [the Scrib](https://en.wikipedia.org/wiki/Scrib), I am not sure I belong there, but my mirrored screen is awesome..." %}
 
-{% blogimage "img/hp85.png", "Sorry, I am HP, I do everything you do, but better..." %}
+We can also summon the whole [HP 9800 series](https://en.wikipedia.org/wiki/HP_9800_series) that started in *1971* down to the late 70s. While the 9830A was not really portable, the HP9825B definitely was.
 
-Well a big difference was that the portal had a single line character screen.
+{% blogimage "img/hp9825-b.png", "1978. HP9825B. Sorry, I am HP, I do everything you do, but better..." %}
 
-{% blogimage "img/mcm.png", "Just like the 1974 [MCM/70](https://en.wikipedia.org/wiki/MCM/70)" %}
+{% blogimage "img/findex.png", "1979. [The Findex](https://oldcomputers.net/findex-computer.html). In case the issue was a lack of handle..." %}
 
-https://en.wikipedia.org/wiki/Sharp_PC-1211
+{% blogimage "img/hp85.png", "January 1980. [HP 85](https://en.wikipedia.org/wiki/HP_Series_80). It starts to be crowded over here..." %}
 
-Speaking of single line character, we can summon the whole [HP 9800 series](https://en.wikipedia.org/wiki/HP_9800_series) that started in *1971* down to the late 70s. While the 9830A was not really portable, the HP9825B definitely was.
-
-{% blogimage "img/hp9825-b.png", "Released in 1978..." %}
-
-Not the only of such computers, btw...
-
-{ % blogimage "img/sharp-pc1211.png", "I can think of another portable computer released before the Portal, that had a single line character display..." % }
+{% placeholder "A PC-1211 on top of the Portal, with the text 'I was first'", "I can think of [another portable computer](https://en.wikipedia.org/wiki/Sharp_PC-1211) released before the Portal, that had a single line character display..." %}
 
 # Portal CCMC?
-What, it is not a Micral Portal? Nope, and it isn't written like that on the machine, and you shouldn't use that term unless you are trying to sell one.
 
-[A picture of the CCMC]
+{% placeholder "A picture of the CCMC label", "Neither R2E nor Micral can be seen anywhere on the machine" %}
+
+What, it is not a Micral Portal? xxx
 
 Portal were built by R2E, the company that created the Micral, and the Operating System was "Prologue" (another fun one to follow on Wikipedia, btw). They were build for another company, CCMC.
 
+{% digression %}
 What is CCMC?
 
 "L’activité première de la société CCMC, devenue CCMX, était le traitement à façon de la production comptable au sein d’ateliers mécanographiques, secteur dans lequel elle était en situation de quasi-monopole à la fin des années 1970."
@@ -84,5 +78,9 @@ That means there wer doing accounting with punch cards, and that they were the b
 
 Btw, CCMC means "Compagnie des centres mécano-comptables"
 
-1294 salaries, renamed CCMC, bought by Cegid in 2004 when there were 
+There were 1294 employees, renamed CCMX, and were bought by Cegid in 2004.
+{% enddigression %}
 
+{% digression %}
+The english wikipedia page of the Micral is full of glaring issues, which I'll try to fix. First, it says the computer was running either Prologue (French Operating System) or BAL (Business Application Language, a proprietary language). That's not 100% the right way to present it, but ok. Unfortunately it links to the Prolog page (the logic computer language) and the IBM Basic Assembly Language...
+{% enddigression %}
