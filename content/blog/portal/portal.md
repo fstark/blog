@@ -1,10 +1,20 @@
-# The Micral Portal : the first portable computer
+---
+title: The "Micral" Portal, the first laptop?
+description: "Close look at the French CCMC Portal"
+date: 2025-11-20
+order: 1
+eleventyExcludeFromCollections: false
+tags:
+  - rant
+---
 
 The Micral Portal is widely known as the first portable computer. It is true, I read it on the wikipedia page.
 
 It is an extremely rare machine, no museum has one, and only 2 exists in private collections, and 3 existing in the world.
 
 From time to time, there is an auction for that incredibely important machine, with prices in the 10K range which is really cheap, when we think that the Micral N sold for over 50K.
+
+Wikipedia screenshot:
 
 {% blogimage "img/wiki-1.png", "I researched it a lot. I mean I read the wikipedia page." %}
 
@@ -43,7 +53,7 @@ But was it successful? Well, there are more than "3 left in the world". And ther
 But that 5100 is really really good looking. Really reminds me of the later [HP85 series](https://en.wikipedia.org/wiki/HP_Series_80
 ).
 
-{% blogimage "img/hp85.png", "Guess what? It was also released before the Portal..." %}
+{% blogimage "img/hp85.png", "Sorry, I am HP, I do everything you do, but better..." %}
 
 Well a big difference was that the portal had a single line character screen.
 
@@ -55,9 +65,9 @@ Speaking of single line character, we can summon the whole [HP 9800 series](http
 
 {% blogimage "img/hp9825-b.png", "Released in 1978..." %}
 
-What other portable computer was released before the Portal, with a single line character display?
+Not the only of such computers, btw...
 
-{ % blogimage "img/sharp-pc1211.png", "The Sharp PC-1211, released in March 1980..." % }
+{ % blogimage "img/sharp-pc1211.png", "I can think of another portable computer released before the Portal, that had a single line character display..." % }
 
 # Portal CCMC?
 What, it is not a Micral Portal? Nope, and it isn't written like that on the machine, and you shouldn't use that term unless you are trying to sell one.
@@ -74,5 +84,5 @@ That means there wer doing accounting with punch cards, and that they were the b
 
 Btw, CCMC means "Compagnie des centres mécano-comptables"
 
-1294 salaries, renamed CCMX, bought by Cegid in 2004 when there were 
+1294 salaries, renamed CCMC, bought by Cegid in 2004 when there were 
 

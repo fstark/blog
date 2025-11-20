@@ -222,4 +222,4 @@ They are used at two different place:
 
 * When the user picks a word, we convert it to a number and scan the vocabulary list until we find it, or the end. This enables us to validate if a word is in the vocabulary or not
 
-
+We're not looking at the assembly this time, 
