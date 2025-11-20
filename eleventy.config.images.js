@@ -79,27 +79,26 @@ module.exports = eleventyConfig => {
 
     image2display = filemeta.url;
 
-    if (filemeta.format === 'gif')
-    {
-        //  The images created for gifs are only the first frame...
-      image2display = "/"+destfile;
+    if (filemeta.format === 'gif') {
+      //  The images created for gifs are only the first frame...
+      image2display = "/" + destfile;
     }
     // console.log( file );
     // console.log( metadata );
-    
+
     // Process caption as markdown to support links and other markdown syntax
     const renderedCaption = md.renderInline(caption);
-    
-    markup.push( '<div style="text-align: center;">' );
-    markup.push( '<figure>' );
-    markup.push( '<a href="/' + destfile + '" target="_blank">' );
-    markup.push( '<img');
-    markup.push( 'loading="lazy" decoding="async" src="'+image2display+'" class="blogimage"');
-    markup.push( '>' );
-    markup.push( '</a>' );
-    markup.push( '<figcaption>' + renderedCaption + '</figcaption>' );
-    markup.push( '</figure>' );
-    markup.push( '</div>' );
+
+    markup.push('<div style="text-align: center;">');
+    markup.push('<figure>');
+    markup.push('<a href="/' + destfile + '" target="_blank">');
+    markup.push('<img');
+    markup.push('loading="lazy" decoding="async" src="' + image2display + '" class="blogimage"');
+    markup.push('>');
+    markup.push('</a>');
+    markup.push('<figcaption>' + renderedCaption + '</figcaption>');
+    markup.push('</figure>');
+    markup.push('</div>');
     return markup.join(" ");
   });
 
