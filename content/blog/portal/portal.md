@@ -1,42 +1,65 @@
-# Let's start with the bullshit
+# The Micral Portal : the first portable computer
 
-The Micral Portal is widely known as the first portable computer. It is true, it is written on the wikipedia page.
+The Micral Portal is widely known as the first portable computer. It is true, I read it on the wikipedia page.
 
 It is an extremely rare machine, no museum has one, and only 2 exists in private collections, and 3 existing in the world.
 
 From time to time, there is an auction for that incredibely important machine, with prices in the 10K range which is really cheap, when we think that the Micral N sold for over 50K.
 
-Sometimes people are a bit confused, and over-hype wikipedia articles. It may or may not be connected with people auctionning that computer at the same time.
+{% blogimage "img/wiki-1.png", "I researched it a lot. I mean I read the wikipedia page." %}
 
-# So, lets clarify
+{% digression %}
+Sometimes people are a bit confused, and over-hype [wikipedia articles](https://en.wikipedia.org/wiki/Portal_%28computer%29). It may or may not be connected with people auctionning that very same computer at the same time.
 
-I happen to have a Portal. I did not pay 10K for it. I have a friend that have one. Here is a picture of the two together:
+Also, don't get me started on the [Q1](https://en.wikipedia.org/wiki/Q1_Corporation).
+{% enddigression %}
 
-[PIC OF BOTH PORTAL]
+# So rare only two exist in private collection
 
+I happen to have a Portal, although I did not pay 10K for it.
+
+{% blogimage "img/portals.jpg", "I think mine is on the right" %}
+
+{% digression %}
 There is a least another one in the stock of the mo5.com French association, we need to dig it to get a famous tri-portal picture. I know of at least 3 additional ones. So that's 6. And I am not an expert at finding computers.
+{% enddigression %}
 
-However, we can admit that if only 3 or 6 or even 20, it is still an extraordinary rare machine. The first portale computer! Presented in October 1980! Several months before the Osborne 1!
+However, we can admit that if only 3 or 6 or even 20 exist, it is still an extraordinary rare machine and fundamental machine. The first portable computer! Presented in October 1980! Several months before the Osborne 1!
 
-[picture of a coq signing]
-{'cocorico'}
+{% blogimage "img/cocorico.png", "So proud of being French right now" %}
 
 Well, if you discount the Xerox that existed 7 years before:
 
-[Picture of the xerox]
-{Sorry I am the PARC, I invented everything you use}
+{ % blogimage "img/xerox.jpg", "Sorry I am the PARC, I invented everything you use" % }
 
-Okaay, I am excessive, the wikipedia states "the first successul portable computer". The success of the Portal was so wild that I was able to track two small 5 lines articles in French magazines from the time. There are no numbers about the sales (more on that later), but one of the model I saw had a number in the 2000 range. So a few thousands at best.
+Okaay, I am excessive, the wikipedia states "the first successul portable computer". The success of the Portal was so wild that I was able to track two small 5 lines articles in French magazines from the time. There are no numbers about the sales (more on that later), but one of the model I saw had a serial number in the 2000 range. So a few thousands at best.
 
-So, yeah, the most successful. If we discount the IBM 5100 that came out 5 years before.
+Sure the [IBM 5100](https://en.wikipedia.org/wiki/IBM_5100) that came out 5 years before.
 
-[THE 5100 computer]
-{Sorry, I am IBM, I patented everything you use}
+{% blogimage "img/ibm-5100.png", "Sorry, I am IBM, I patented everything you use" %}
 
-But was it successful? Well, you can find pictures of a 5100 with a 13691 serial. And there also were 5110 and 5120. It is a safe bet that with an IBM-baked worlwide release of a general purpose computer it probably beat the French "Portal CCMC".
+But was it successful? Well, there are more than "3 left in the world". And there also were 5110 and 5120. It is a safe bet that with an IBM-baked worlwide release of a general purpose computer it probably beat the French "Portal CCMC".
+
+But that 5100 is really really good looking. Really reminds me of the later [HP85 series](https://en.wikipedia.org/wiki/HP_Series_80
+).
+
+{% blogimage "img/hp85.png", "Guess what? It was also released before the Portal..." %}
+
+Well a big difference was that the portal had a single line character screen.
+
+{% blogimage "img/mcm.png", "Just like the 1974 [MCM/70](https://en.wikipedia.org/wiki/MCM/70)" %}
+
+https://en.wikipedia.org/wiki/Sharp_PC-1211
+
+Speaking of single line character, we can summon the whole [HP 9800 series](https://en.wikipedia.org/wiki/HP_9800_series) that started in *1971* down to the late 70s. While the 9830A was not really portable, the HP9825B definitely was.
+
+{% blogimage "img/hp9825-b.png", "Released in 1978..." %}
+
+What other portable computer was released before the Portal, with a single line character display?
+
+{ % blogimage "img/sharp-pc1211.png", "The Sharp PC-1211, released in March 1980..." % }
 
 # Portal CCMC?
-
 What, it is not a Micral Portal? Nope, and it isn't written like that on the machine, and you shouldn't use that term unless you are trying to sell one.
 
 [A picture of the CCMC]

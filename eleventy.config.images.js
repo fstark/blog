@@ -1,8 +1,11 @@
 const path = require("path");
 const eleventyImage = require("@11ty/eleventy-img");
 const fs = require('fs');
+const markdownIt = require("markdown-it");
 
 module.exports = eleventyConfig => {
+  // Initialize markdown-it for processing captions
+  const md = markdownIt({ html: true });
   function relativeToInputPath(inputPath, relativeFilePath) {
     let split = inputPath.split("/");
     split.pop();
@@ -83,6 +86,10 @@ module.exports = eleventyConfig => {
     }
     // console.log( file );
     // console.log( metadata );
+    
+    // Process caption as markdown to support links and other markdown syntax
+    const renderedCaption = md.renderInline(caption);
+    
     markup.push( '<div style="text-align: center;">' );
     markup.push( '<figure>' );
     markup.push( '<a href="/' + destfile + '" target="_blank">' );
@@ -90,7 +97,7 @@ module.exports = eleventyConfig => {
     markup.push( 'loading="lazy" decoding="async" src="'+image2display+'" class="blogimage"');
     markup.push( '>' );
     markup.push( '</a>' );
-    markup.push( '<figcaption>' + caption + '</figcaption>' );
+    markup.push( '<figcaption>' + renderedCaption + '</figcaption>' );
     markup.push( '</figure>' );
     markup.push( '</div>' );
     return markup.join(" ");
