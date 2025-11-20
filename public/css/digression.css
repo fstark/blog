@@ -1,0 +1,33 @@
+/* Digression aside-style box */
+.digression {
+	display: block;
+	margin: 1.5em 0;
+	padding: 0.75em 1em 0.75em 1.5em;
+	border-left: 4px solid var(--color-gray-50);
+	background-color: var(--color-digression-bg);
+	font-style: italic;
+	color: var(--color-gray-70);
+}
+
+.digression-label {
+	font-weight: bold;
+	font-style: normal;
+	margin-right: 0.25em;
+}
+
+/* Light mode colors */
+:root {
+	--color-digression-bg: #f8f9fa;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+	.digression {
+		border-left-color: var(--color-gray-70);
+		color: var(--color-gray-50);
+	}
+	
+	:root {
+		--color-digression-bg: #1a1a1a;
+	}
+}

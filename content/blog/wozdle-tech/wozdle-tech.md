@@ -48,7 +48,7 @@ This duality ZP/rest of the memory is what most people struggle with when starti
 
 Now, we can step into the awesome: the 6502 addressing modes. This is where everything will start to make sense, including the lack of increment on the A register :-)
 
-I am not doing a primer on all the addressing modes of the 6502, just the ones that are used in the code. By understanding the next section, you should know enought to follow the design and the algorithm in Wozdle.
+I am not doing a primer on all the addressing modes of the 6502, just the ones that are used in the code. By understanding the next section, you should know enought to follow the design and the algorithms in Wozdle.
 
 * Implicit addressing. This is named when the data to be used is implicit to the instructions. For instance, ``SEC`` means "Set Carry Flag". It implicitly changes the flags registers to set the carry flag to 1.
 
@@ -58,13 +58,30 @@ I am not doing a primer on all the addressing modes of the 6502, just the ones t
 
 * Zero Page. This means that the thing we operate on is a zero page location. ``MOV A,65`` will move the content of address 65 into the A register. The fact that this is the "default" behavior should tell you a lot on the importance of the ZP. Maybe you can't ``INC A``, but you can ``INC 65``, reading from the memory location 65, incrementing and writing back, *in a single instruction*, without hurting the current value of your A register. In *2 bytes and 5 cycles*. How awesome is that?
 
+{% digression %}
+The most common error you'll do in 6502 assembly is writing ``MOV A,$41`` instead of ``MOV A,#$41``. By far.
+{% enddigression %}
+
 * Zero Page, X. This adds the X register before accessing the ZP location. ``INC 65,X`` would add X to 65, and increment the value in the resulting memory location. In *2 bytes and 6 cycles*.
 
-* Absolute, X. This will use a 16 bits address and add the content of the X register to the address value before using it. It is used when the operand is larger than 255. ``INC 5000,X`` will add X to 5000 and increment the value in the resulting location. In 3 bytes. And 7 cycles. And if you ask me, this is insanely fast. The CPU have to fetch an *extra* byte (hence an additional cycle), and to perform a 16 bits addition, which should also add an extra cycle. However, the 6502 is a little-endian CPU, so the instruction is stored this way: ``FE 88 13`` ($1388 is 5000). When we perform an addition, we start by the right most digit, in order to handle the carry properly. It is the same for CPUs. Being little endian, the cpu gets the ``$88`` before the ``$13``, so it can start the calculation one cycle earlier, and finish in 7 cycles instead of 8. If you don't find this *awesome*, you're in the wrong blog.
+* Absolute, X. This will use a 16 bits address and add the content of the X register to the address value before using it. It is used when the operand is larger than 255. ``INC 5000,X`` will add X to 5000 and increment the value in the resulting location. In 3 bytes. And 7 cycles. And if you ask me, this is insanely fast. The CPU have to fetch an *extra* byte (hence an additional cycle), and to perform a 16 bits addition, which should also add an extra cycle.
 
-This is used in wozdle to address some of the static areas in memory, for instance ``LDA CHARROM,X``: access the Xth byte of the "character ROM" use din display the large texts.
+{% digression "Little endian rulez" %}
+The 6502 is a little-endian CPU, so the instruction is stored this way: ``FE 88 13`` ($1388 is 5000). When we perform an addition, we start by the right most digit, in order to handle the carry properly. It is the same for CPUs. Being little endian, the cpu gets the ``$88`` before the ``$13``, so it can start the calculation one cycle earlier, and finish in 7 cycles instead of 8. If you don't find this *awesome*, you're in the wrong blog.
+{% enddigression %}
 
-* Indirect Indexed. This will use the zero page to get an address, and then add the Y register to it. It is written ``ADC (65),Y``. This will load the content of memory addresses 65 and 66, add Y to it, and add the content of the memory pointed to it to the accumulator. For instance, if addresses 65 and 66 contained $8813 and the Y register 42, this would add the content of address location 5042 to A. In 2 bytes. And 5 or 6 cycles.
+This is used in wozdle to address some of the static areas in memory, for instance ``LDA CHARROM,X``: access the Xth byte of the "character ROM" used in displaying the large texts.
+
+* Indirect Indexed. This will use the zero page to get an address, and then add the Y register to it. It is written ``ADC (65),Y``. This will load the content of memory addresses 65 **and 66**, add Y to it, and add the content of the memory pointed to it to the accumulator. For instance, if addresses 65 and 66 contained $88 and $13 and the Y register 42, this would add the content of address location 5042 to A. In 2 bytes. And 5 or 6 cycles.
+
+```
+..
+$0041 | 88 |
+$0042 | 13 |  ---+
+..               | $1388 (ZP $41 and $42) + $2A (register Y)
+$13B2 | 12 |  <--+
+```
+
 
 There are limitations, because registers are hardwired for specific operations. For instance, there is no Indirect Indexed with X. But there is an Indexed Indirect that we don't use in Wozdle but you may want to read about. Also not all instructions support all modes with all the registers. For instance ZP,Y is only supported by LDX and STX (a case where you can't really use X), but Absolute,Y would work (but take 3 bytes, and don't have *exactly the same semantics regarding to address overflow*). So ``LDA 65,X`` is a two bytes instruction, while ``LDA 65,Y`` is a slower 3 bytes one (because it really is ``LDA $41,X`` vs ``LDA $0041,Y``)
 

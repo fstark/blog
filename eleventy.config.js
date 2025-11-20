@@ -9,6 +9,7 @@ const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 
 const pluginDrafts = require("./eleventy.config.drafts.js");
 const pluginImages = require("./eleventy.config.images.js");
+const pluginDigression = require("./eleventy.config.digression.js");
 
 
 
@@ -28,7 +29,8 @@ module.exports = function(eleventyConfig) {
 	// For example, `./public/css/` ends up in `_site/css/`
 	eleventyConfig.addPassthroughCopy({
 		"./public/": "/",
-		"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css"
+		"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css",
+		"./public/css/digression.css": "/css/digression.css"
 	});
 	eleventyConfig.addPassthroughCopy( "content/**/public/*" );
 	// Run Eleventy when these files change:
@@ -40,6 +42,7 @@ module.exports = function(eleventyConfig) {
 	// App plugins
 	eleventyConfig.addPlugin(pluginDrafts);
 	eleventyConfig.addPlugin(pluginImages);
+	eleventyConfig.addPlugin(pluginDigression);
 
 	// Official plugins
 	eleventyConfig.addPlugin(pluginRss);
@@ -90,7 +93,6 @@ module.exports = function(eleventyConfig) {
 	eleventyConfig.addFilter("filterTagList", function filterTagList(tags) {
 		return (tags || []).filter(tag => ["all", "nav", "post", "posts"].indexOf(tag) === -1);
 	});
-
 
     //  adding sort by order
     function sortByOrder(values) {

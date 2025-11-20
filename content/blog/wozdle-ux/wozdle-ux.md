@@ -54,7 +54,7 @@ The character you want to ouptut will be placed at the "cursor" position. The ha
 
 * You cannot move the cursor on screen
 
-Oh, you want to update *any part* of what is already displayed? Forget about it. The cursor only advances left, or down, if you output a carriage return.
+Oh, you want to update *any part* of what is already displayed? Forget about it. The cursor only advances left, or down to next line, if you output a carriage return.
 
 * You cannot clear the screen
 
@@ -69,7 +69,7 @@ So you can actually clear the screen in 0.64 seconds! (but your cursor will be l
 
 Looking at those constraints, it is clear that the Apple1 screen really is a Teletype, with only 24 lines of history. What we are really doing is design Wordle for a teleptype. Maybe I can reuse the code for an ASR-33 Wordle one day?
 
-So, from a UX standpoint, this is pretty tough. What you see as a monitor, but is closer to a teletype.
+So, from a UX standpoint, this is pretty tough. You see as a monitor, but it is a teletype.
 
 {% blogimage "img/apple1-asr33.jpg", "Those two devices have very similar graphical capabilities" %}
 
@@ -77,11 +77,11 @@ So, from a UX standpoint, this is pretty tough. What you see as a monitor, but i
 
 {% blogimage "img/apple2-text-screen.png", "The upside is that you can use the grid that came page 16 of the original Apple2 manual" %}
 
-We want, at any point in time, the display to contain *at least*:
+As my constraint is a wozdle as close as possible to the original, at any point in time the display needs to contain *at least*:
 
-* An indication of the game progress (how many guesses did you made)
+* An indication of the game progress (how many guesses did you made?)
 
-* The history of the previous guesses (total number of allowed guesses is 6)
+* The history of the previous guesses (the total number of allowed guesses is 6)
 
 * The responses for each of those guesses (which characters were properly placed, which we not properly placed, which are not in the target word)
 
@@ -103,25 +103,27 @@ Based on the above constraints I derived the following design principles:
 
 * As there are 24 lines, each guess will take 4 line
 
-* If there is any mistake made in entering, we will scroll out and redraw the whole screen, as there is no way to "undo" what we displayed. We will only redraw what is important for the gameplay, so:
+* If there is any mistake made in entering, we will scroll out and redraw the whole screen, as there is no way to "undo" what we displayed (remember, not even backspace is possible).
+
+We will only redraw what is important for the gameplay, so:
 
 * The guesses will be placed on the left of the screen, so they can be displayed quickly when we need to redraw the full screen.
 
 * The right side will contain the "keyboard", with the status of each letter.
 
-* This keyboard is only useful for the current solution. If we need to refresh the screen, we will not draw the keyboard for any guesses but the last.
+* This keyboard is only useful for the current solution. If we need to refresh the screen, we will not draw the keyboard for any guesses but the last, so we will gain a lot of time.
 
 Now, the "graphical" design
 
-The user will directly type his guess.
+* The user will directly type his guess.
 
-In order to have some "breathing room", we will add a space between each word letter.
+* In order to have some "breathing room", we will add a space between each word letter. This will also give the user some feedback that something happened.
 
 This means that the left side of the screen is going to use 9 characters for the guess.
 
-On the line under the guess, we will put the result ('?' and '!' to indicate which characters were correct)
+* On the line under the guess, we will put the result ('?' and '!' to indicate which characters were correct)
 
-We will need some sort of separator and have 30 characters left to draw the "keyboard".
+After some sort of separator we will have 30 characters left to draw the "keyboard" on the right side.
 
 Each "key" of the keyboard needs a "keycap", some sort of status, and there is a need for a separator, so we need 3 characters per key. The longest keyboard row, the top one, is "QWERTYUIOP", and *exaclty* 10 character wide, which is a sign of the gods, 9+1+30=40.
 

@@ -116,10 +116,6 @@ module.exports = eleventyConfig => {
     return '<a href="https://' + server + '/' + handle + '" target="_blank">' + handle + '</a>';
   });
 
-  eleventyConfig.addAsyncShortcode("digression", async function digressionShortcode(text) {
-    return '';
-  });
-
 };
 
 /*
