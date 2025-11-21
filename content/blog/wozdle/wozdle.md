@@ -1,6 +1,6 @@
 ---
 title: Wozdle, the best game for the Apple1 (Wozdle 1/3)
-description: "Making Wordle for the Apple1 1/3 : feasability"
+description: The first part of a series where we look into doing something impossible at first, a perfect Wordle clone on the Apple 1
 date: 2025-11-19
 order: 1
 eleventyExcludeFromCollections: false
@@ -70,7 +70,7 @@ But that means 12947 5-letters words. That's already 64735 bytes. We can't fit t
 
 ### Encoding words
 
-Let's try some compression. In developing wozdle, I created a C++ companion program that helped me to try ideas, compute sizes, etc. You can find it [on the github](https://github.com/fstark/wozdle/blob/main/src/wozdleutil.cpp).
+Let's try some compression. In developing wozdle, I created a C++ companion program that helped me to try ideas, compute sizes, etc. You can find it {% github "wozdle", "on the github", "src/wozdleutil.cpp" %}.
 
 For wozdle, compression is all about using something we know in our data to encode information more efficiently.
 

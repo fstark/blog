@@ -2,8 +2,17 @@
 <ol reversed class="postlist">
 {% for post in postslist | reverse %}
 	<li class="postlist-item{% if post.url == url %} postlist-item-active{% endif %}">
-		<a href="{{ post.url }}" class="postlist-link">{% if post.data.title %}{{ post.data.title }}{% else %}<code>{{ post.url }}</code>{% endif %}</a>
-		<time class="postlist-date" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate("LLLL yyyy") }}</time>
+		{% set firstImage = post | getFirstBlogImage %}
+		{% if firstImage %}
+			<img src="{% blogthumbnail firstImage.src, firstImage.inputPath %}" alt="" class="postlist-thumbnail" loading="lazy">
+		{% endif %}
+		<div class="postlist-content">
+			<a href="{{ post.url }}" class="postlist-link">{% if post.data.title %}{{ post.data.title }}{% else %}<code>{{ post.url }}</code>{% endif %}</a>
+			{% if post.data.description %}
+				<p class="postlist-description">{{ post.data.description }}</p>
+			{% endif %}
+			<time class="postlist-date" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate("LLLL yyyy") }}</time>
+		</div>
 	</li>
 {% endfor %}
 </ol>

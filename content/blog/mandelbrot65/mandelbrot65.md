@@ -1,6 +1,6 @@
 ---
 title: 6502 assembly Mandelbrot for Apple1, bits by bits
-description: Designing and coding a 6502 assembly version of Mandelbrot for the Apple1
+description: Where we dig into designing and coding a 6502 assembly version of Mandelbrot for the Apple1
 date: 2024-10-27
 order: 1
 eleventyExcludeFromCollections: false
@@ -363,9 +363,9 @@ In the video above, I modified the emulator on the right-hand side to display ch
 
 ## The overall code structure
 
-The code is quite straightforward and can be viewed in the [GitHub repository](https://github.com/fstark/mandelbrot65)
+The code is quite straightforward and can be viewed in the {% github "mandelbrot65", "GitHub repository" %}
 
-The assembly code is fully documented [and can be accessed here](https://github.com/fstark/mandelbrot65/blob/main/mandelbrot65.asm).
+The assembly code is fully documented {% github "mandelbrot65", "and can be accessed here", "mandelbrot65.asm" %}.
 
 ``DRAWSET`` displays the Mandelbrot set on the screen. While long, it is quite straightforward. It calls ``ITER`` to compute and store in the ZP page variable ``IT`` the iteration count at the current position (stored unsurprisingly in the zero page variables ``X`` and ``Y`` -- don't mix them up with the ``X`` and ``Y`` registers).
 
@@ -466,4 +466,4 @@ Hope you had fun with this dive into 6502 assembly and the Mandelbrot set. I sur
 
 *My younger self was not available for comments.*
 
-You can find the source code on [GitHub](https://github.com/fstark/mandelbrot65).
+You can find the source code on {% github "mandelbrot65", "GitHub" %}.

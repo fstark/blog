@@ -1,6 +1,6 @@
 ---
 title: Repairing a Jailbar SE/30
-description: Repair of an SE/30 suffering from jailbars
+description: Where we look at a Mac SE/30 suffering from jailbars and use our soldering iron to cure it
 date: 2023-08-08
 order: 1
 draft: false
@@ -9,7 +9,7 @@ tags:
   - mac
 ---
 
-I stumbled upon an SE/30 being sold at an incredibly low price because it wasn't working. Despite already having a few of these that I hold dear, I couldn't resist buying it with the intention of trying to fix it and then passing it on to someone else. After all, the SE/30 is the best mac, by far the fastest compact mac. And the mac for which I originally created [MacFlim](http://www.macflim.com/macflim2). To be honest, the SE/30 is my favorite computer.
+I stumbled upon an SE/30 being sold at an incredibly low price because it wasn't working. Despite already having a few of these that I hold dear, I couldn't resist buying it with the intention of trying to fix it and then passing it on to someone else. After all, the SE/30 is the best mac, by far the fastest compact mac. And the mac for which I originally created [MacFlim](http://www.macflim.com/macflim2) ({% github "macflim", "source code" %}). To be honest, the SE/30 is my favorite computer.
 
 ## External Examination
 

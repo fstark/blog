@@ -13,6 +13,7 @@ const pluginDigression = require("./eleventy.config.digression.js");
 const pluginBlogImage = require("./eleventy.config.blogimage.js");
 const pluginBlogVideo = require("./eleventy.config.blogvideo.js");
 const pluginSocial = require("./eleventy.config.social.js");
+const pluginGithub = require("./eleventy.config.github.js");
 
 
 
@@ -21,7 +22,7 @@ const pluginSocial = require("./eleventy.config.social.js");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 
 
-module.exports = function(eleventyConfig) {
+module.exports = function (eleventyConfig) {
 	eleventyConfig.addPlugin(syntaxHighlight,
 		{
 			errorOnInvalidLanguage: true
@@ -35,7 +36,7 @@ module.exports = function(eleventyConfig) {
 		"./node_modules/prismjs/themes/prism-okaidia.css": "/css/prism-okaidia.css",
 		"./public/css/digression.css": "/css/digression.css"
 	});
-	eleventyConfig.addPassthroughCopy( "content/**/public/*" );
+	eleventyConfig.addPassthroughCopy("content/**/public/*");
 	// Run Eleventy when these files change:
 	// https://www.11ty.dev/docs/watch-serve/#add-your-own-watch-targets
 
@@ -49,6 +50,7 @@ module.exports = function(eleventyConfig) {
 	eleventyConfig.addPlugin(pluginBlogImage);
 	eleventyConfig.addPlugin(pluginBlogVideo);
 	eleventyConfig.addPlugin(pluginSocial);
+	eleventyConfig.addPlugin(pluginGithub);
 
 	// Official plugins
 	eleventyConfig.addPlugin(pluginRss);
@@ -67,15 +69,15 @@ module.exports = function(eleventyConfig) {
 
 	eleventyConfig.addFilter('htmlDateString', (dateObj) => {
 		// dateObj input: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-date-string
-		return DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat('yyyy-LL-dd');
+		return DateTime.fromJSDate(dateObj, { zone: 'utc' }).toFormat('yyyy-LL-dd');
 	});
 
 	// Get the first `n` elements of a collection.
 	eleventyConfig.addFilter("head", (array, n) => {
-		if(!Array.isArray(array) || array.length === 0) {
+		if (!Array.isArray(array) || array.length === 0) {
 			return [];
 		}
-		if( n < 0 ) {
+		if (n < 0) {
 			return array.slice(n);
 		}
 
@@ -90,7 +92,7 @@ module.exports = function(eleventyConfig) {
 	// Return all the tags used in a collection
 	eleventyConfig.addFilter("getAllTags", collection => {
 		let tagSet = new Set();
-		for(let item of collection) {
+		for (let item of collection) {
 			(item.data.tags || []).forEach(tag => tagSet.add(tag));
 		}
 		return Array.from(tagSet);
@@ -100,18 +102,55 @@ module.exports = function(eleventyConfig) {
 		return (tags || []).filter(tag => ["all", "nav", "post", "posts"].indexOf(tag) === -1);
 	});
 
-    //  adding sort by order
-    function sortByOrder(values) {
-        let vals = [...values];     // this *seems* to prevent collection mutation...
-        return vals.sort((a, b) =>
-        {
-            const dateComparison = new Date(a.date) - new Date(b.date);
-            if (dateComparison !== 0)
-                return dateComparison;
-            return a.data.order - b.data.order;
-        });
-    }
-    eleventyConfig.addFilter("sortByOrder", sortByOrder);
+	//  adding sort by order
+	function sortByOrder(values) {
+		let vals = [...values];     // this *seems* to prevent collection mutation...
+		return vals.sort((a, b) => {
+			const dateComparison = new Date(a.date) - new Date(b.date);
+			if (dateComparison !== 0)
+				return dateComparison;
+			return a.data.order - b.data.order;
+		});
+	}
+	eleventyConfig.addFilter("sortByOrder", sortByOrder);
+
+	// Extract first blogimage from post content for thumbnails
+	// Prioritizes images marked with "thumbnail" parameter
+	eleventyConfig.addFilter("getFirstBlogImage", function (post) {
+		if (!post || !post.template || !post.template.frontMatter) {
+			return null;
+		}
+
+		// Get the raw content (before rendering)
+		const content = post.template.frontMatter.content;
+		if (!content) {
+			return null;
+		}
+
+		// First, look for an image explicitly marked as "thumbnail"
+		// Match: {% blogimage "img/path.jpg", "caption", "thumbnail" %}
+		// Or with optional widths/sizes: {% blogimage "img/path.jpg", "caption", widths, sizes, "thumbnail" %}
+		const thumbnailRegex = /{%\s*blogimage\s+"([^"]+)"[^%]*"thumbnail"\s*%}/;
+		const thumbnailMatch = content.match(thumbnailRegex);
+
+		if (thumbnailMatch && thumbnailMatch[1]) {
+			return {
+				src: thumbnailMatch[1],
+				inputPath: post.inputPath
+			};
+		}
+
+		// Fall back to the first blogimage if no explicit thumbnail is marked
+		const firstMatch = content.match(/{%\s*blogimage\s+"([^"]+)"/);
+		if (firstMatch && firstMatch[1]) {
+			return {
+				src: firstMatch[1],
+				inputPath: post.inputPath
+			};
+		}
+
+		return null;
+	});
 
 
 	// Customize Markdown library settings:
@@ -123,7 +162,7 @@ module.exports = function(eleventyConfig) {
 				symbol: "#",
 				ariaHidden: false,
 			}),
-			level: [1,2,3,4],
+			level: [1, 2, 3, 4],
 			slugify: eleventyConfig.getFilter("slugify")
 		});
 	});

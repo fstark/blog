@@ -1,7 +1,7 @@
 ---
 title: Designing the UX of Wozdle (Wozdle 2/3)
-description: "Making Wordle for the Apple1 2/3 : UX"
-date: 2023-10-21
+description: "Where we dig into what makes designing software for the Apple 1 so special"
+date: 2025-11-21
 order: 1
 eleventyExcludeFromCollections: false
 tags:
@@ -76,7 +76,7 @@ So, from a UX standpoint, this is pretty tough. You see as a monitor, but it is 
 
 ### The UX design
 
-{% blogimage "img/apple2-text-screen.png", "The upside is that you can use the grid that came page 16 of the original Apple2 manual" %}
+{% blogimage "img/apple2-text-screen.png", "The upside is that you can use the grid that came page 16 of the original Apple2 manual", "thumbnail" %}
 
 As my constraint is a wozdle as close as possible to the original, at any point in time the display needs to contain *at least*:
 

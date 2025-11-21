@@ -1,6 +1,6 @@
 ---
 title: Midjourney on the cutest 40 year old laptop ever
-description: Drawing midjouney images on the Casio PB-700 internal plotter
+description: Where my dream of plotting cool images on with my Casio PB-700 comes finally true
 date: 2023-08-08
 order: 1
 eleventyExcludeFromCollections: false
@@ -112,7 +112,7 @@ Here is the full source code of midjourney for PB-700:
 
 ### The ``plotty.sh`` server
 
-On the linux box, we need some server software that just executes a succession of commands. Let's pretend that ``bash`` is perfect for that, and you can look at [the full server code here](https://github.com/fstark/PloTTY/blob/main/plotty.sh) to see the source code in its glory. The rest of this walktrhough is every steps of this server's implementation.
+On the linux box, we need some server software that just executes a succession of commands. Let's pretend that ``bash`` is perfect for that, and you can look at {% github "PloTTY", "the full server code here", "plotty.sh" %} to see the source code in its glory. The rest of this walktrhough is every steps of this server's implementation.
 
 ### Sending BASIC to the PB-700
 
@@ -137,7 +137,7 @@ The communication is a 300 baud one, with a header. The ``.bin`` is 224 bytes, a
 
 The ``casutil`` commands work on ``.wav`` files, so I need to use the ``record`` command to get the sound from the PB-700. Unfortunately, there is no way to make it stops when the line turns to silence. Hence, I had to create my own command that waits for sound, and records until the sound stops.
 
-A small [python command ``listen.py``](https://github.com/fstark/PloTTY/blob/main/pb-700/listen.py) had to be created for that, using the python ``pyaudio``, ``audioop`` and ``wave`` modules. Thanks ChatGPT for writing half of the code there. Unfortunately, ``casutil`` needs 8 bit wav, and I wasn't able to make it output that, so a quick ``sox`` solved that issue:
+A small {% github "PloTTY", "python command ``listen.py``", "pb-700/listen.py" %} had to be created for that, using the python ``pyaudio``, ``audioop`` and ``wave`` modules. Thanks ChatGPT for writing half of the code there. Unfortunately, ``casutil`` needs 8 bit wav, and I wasn't able to make it output that, so a quick ``sox`` solved that issue:
 
 ```python
 # Listen and decode answer
@@ -244,7 +244,7 @@ In the Discord channel...
 
 ### Retrieving the image
 
-Retrieving the image was not too difficult, using bits of the failed code of the previous section: I have a Discord bot that connects to a channel and downloads the latest image generated. It is built by trial and errors, and [you can find it in the github](https://github.com/fstark/PloTTY/blob/main/midjourney/midjourney-bot.py).
+Retrieving the image was not too difficult, using bits of the failed code of the previous section: I have a Discord bot that connects to a channel and downloads the latest image generated. It is built by trial and errors, and {% github "PloTTY", "you can find it in the github", "midjourney/midjourney-bot.py" %}.
 
 {% blogimage "img/many-bothan-died.jpg", "But this is a sacrifice I am ready to make" %}
 
@@ -260,7 +260,7 @@ Anyway, at the end, I got this running.
 
 When I started the project, I naively thought it would be the hardest part. It definitely wasn't.
 
-The heart of it is a ``python`` script, [called ``trace.py``](https://github.com/fstark/PloTTY/blob/main/trace.py)
+The heart of it is a ``python`` script, {% github "PloTTY", "called ``trace.py``", "trace.py" %}
 
 I'll do a separate blog post to go through the process, but fundamentally, it takes an image, a corner to extract (because MidJouney insists in generating 4 images), and generates a JSON with coordinates list.
 
@@ -288,7 +288,7 @@ The output of the script:
 
 ### Generating the BASIC program
 
-Those coordinates can then be turned into a basic program for the PB-700 by the [``json2basic.py`` python script](https://github.com/fstark/PloTTY/blob/main/pb-700/json2basic.py)
+Those coordinates can then be turned into a basic program for the PB-700 by the {% github "PloTTY", "``json2basic.py`` python script", "pb-700/json2basic.py" %}
 
 ```basic
 1CLS:PRINT"Lines 1-93/93"
@@ -347,15 +347,15 @@ During all this time, the PB-700 has been waiting in its ``CHAIN`` command. It w
 
 Oh, and make sure you have disabled the notifications from your discord client, because if anything happens, *the notification sound will helpfully get mixed in the data and sent to the PB-700*, breaking the whole process. Lovely.
 
-{% blogimage "img/final.jpg", "This is what will be drawn by the PB-700" %}
+{% blogimage "img/final.jpg", "This is what will be drawn by the PB-700", "thumbnail" %}
 
 At the end of the program, the PB-700 will ``PUT`` the string "NEXT". The ``plotty.sh`` shell script will read it and know that the PB-700 is ready to ``CHAIN`` into another program. It will then send either the next part of the drawing, or go back to sending the orginal ``plotty.bas`` program, letting the user select a new drawing.
 
 ## How do I run it myself?
 
-Well, if you have the PB-700 and the CM-1, a linux host and two audio cables, you can [head to the repository](https://github.com/fstark/PloTTY). You will also need a link to the [``casutils``](http://www.mvcsys.de/doc/casioutil.html) commands at the top of ``plotty.sh`` working directory, and an install of ``sox``.
+Well, if you have the PB-700 and the CM-1, a linux host and two audio cables, you can {% github "PloTTY", "head to the repository" %}. You will also need a link to the [``casutils``](http://www.mvcsys.de/doc/casioutil.html) commands at the top of ``plotty.sh`` working directory, and an install of ``sox``.
 
-There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt that have a matching JPG image in the ``cache`` directory will skip the whole discord/midjourney process. [Quite a few are provided in the github](https://github.com/fstark/PloTTY/tree/main/cache), so you can easily invoke Cthulhu, Darth Vador or Mickey Mouse. 
+There is a caching mecanism in the ``plotty.sh`` shell script, and any prompt that have a matching JPG image in the ``cache`` directory will skip the whole discord/midjourney process. {% github "PloTTY", "Quite a few are provided in the github", "cache/" %}, so you can easily invoke Cthulhu, Darth Vador or Mickey Mouse. 
 
 And typing ``CAT``, variation ``1`` on your PB-700, will always produce the following cat image:
 
@@ -369,7 +369,7 @@ That was a fun ride, and I finally got my plotter to generate interesting images
 
 ## Links
 
-[The github repository will all the code and sample images](https://github.com/fstark/PloTTY)
+{% github "PloTTY", "The github repository will all the code and sample images" %}
 
 As there is no Wikipedia page for the PB-700 (what a shame), here are a few links:
 
