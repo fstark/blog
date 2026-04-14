@@ -34,7 +34,7 @@ const hasFfmpeg = hasCommand("ffmpeg");
 module.exports = function (mode) {
 	const isColor = mode === "color";
 	const outputDir = isColor ? "_site_retro" : "_site_retro_bw";
-	const imgMaxWidth = 500;
+	const imgMaxWidth = 400;
 
 	// Track converted images to avoid redundant work
 	const convertedImages = new Set();
@@ -153,15 +153,17 @@ module.exports = function (mode) {
 					if (isColor) {
 						execSync(`${magickCmd} "${srcFile}" -resize ${maxWidth}x\\> -colors 128 "${destFile}"`, { stdio: "pipe", timeout: 30000 });
 					} else {
-						execSync(`${magickCmd} "${srcFile}" -resize ${maxWidth}x\\> -colorspace Gray -dither FloydSteinberg -colors 2 "${destFile}"`, { stdio: "pipe", timeout: 30000 });
+						execSync(`${magickCmd} "${srcFile}" -background white -alpha remove -alpha off -resize ${maxWidth}x\\> -white-threshold 98% -colorspace Gray -dither FloydSteinberg -colors 2 -type bilevel "${destFile}"`, { stdio: "pipe", timeout: 30000 });
 					}
 				} else {
 					const sharp = require("sharp");
 					let pipeline = sharp(srcFile).resize(maxWidth, null, { withoutEnlargement: true });
 					if (!isColor) {
-						pipeline = pipeline.greyscale();
+						pipeline = pipeline.greyscale().gif({ colours: 2, dither: 1.0 });
+					} else {
+						pipeline = pipeline.gif({ colours: 128 });
 					}
-					await pipeline.gif().toFile(destFile);
+					await pipeline.toFile(destFile);
 				}
 				convertedImages.add(destFile);
 
@@ -229,8 +231,8 @@ module.exports = function (mode) {
 
 			return [
 				'<center>',
-				`<img src="${url}" alt="${renderedCaption}" width="${actualWidth}">`,
-				`<br><font size="2"><i>${renderedCaption}</i></font>`,
+				`<img src="${url}" alt="${caption}" width="${actualWidth}">`,
+				`<br><i>${renderedCaption}</i>`,
 				'</center><br>'
 			].join("\n");
 		});
@@ -247,11 +249,11 @@ module.exports = function (mode) {
 				return [
 					'<center>',
 					`<img src="/${gifName}" alt="${caption}" width="${imgMaxWidth}">`,
-					`<br><font size="2"><i>${caption} (animated)</i></font>`,
+					`<br><i>${caption} (animated)</i>`,
 					'</center><br>'
 				].join("\n");
 			} else {
-				return `<center><font size="2"><i>[Video: ${caption}]</i></font></center><br>`;
+				return `<center><i>[Video: ${caption}]</i></center><br>`;
 			}
 		});
 
@@ -297,7 +299,7 @@ module.exports = function (mode) {
 			return [
 				'<center>',
 				`<i>[${description}]</i>`,
-				`<br><font size="2"><i>${renderedCaption}</i></font>`,
+				`<br><i>${renderedCaption}</i>`,
 				'</center><br>'
 			].join("\n");
 		});

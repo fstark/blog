@@ -3,7 +3,7 @@ layout: layouts/base.njk
 ---
 <h2>{{ title }}</h2>
 
-<font face="Geneva, Helvetica, Arial" size="2">
+<font face="Geneva, Helvetica, Arial">
 <i>{{ page.date | readableDate }}</i>
 {%- for tag in tags | filterTagList %}
 {%- set tagUrl %}/tags/{{ tag | slugify }}/{% endset %}
@@ -19,7 +19,7 @@ layout: layouts/base.njk
 {%- set nextPost = collections.posts | getNextCollectionItem %}
 {%- if nextPost or previousPost %}
 <hr size="1">
-<font face="Geneva, Helvetica, Arial" size="2">
+<font face="Geneva, Helvetica, Arial">
 {%- if previousPost %}&lt;&lt; <a href="{{ previousPost.url }}">{{ previousPost.data.title }}</a>{% endif %}
 {%- if previousPost and nextPost %} | {% endif %}
 {%- if nextPost %}<a href="{{ nextPost.url }}">{{ nextPost.data.title }}</a> &gt;&gt;{% endif %}
