@@ -1,0 +1,11 @@
+<ol>
+{% for post in postslist | reverse %}
+<li>
+<a href="{{ post.url }}">{% if post.data.title %}{{ post.data.title }}{% else %}{{ post.url }}{% endif %}</a>
+<font size="1"> - {{ post.date | readableDate("LLLL yyyy") }}</font>
+{% if post.data.description %}
+<br><font size="2">{{ post.data.description }}</font>
+{% endif %}
+</li>
+{% endfor %}
+</ol>

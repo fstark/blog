@@ -1,4 +1,6 @@
 _site/
+_site_retro/
+_site_retro_bw/
 node_modules/
 package-lock.json
 .DS_Store

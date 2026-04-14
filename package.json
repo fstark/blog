@@ -8,7 +8,11 @@
 		"start": "npx @11ty/eleventy --serve --quiet",
 		"debug": "DEBUG=Eleventy* npx @11ty/eleventy",
 		"debugstart": "DEBUG=Eleventy* npx @11ty/eleventy --serve --quiet",
-		"benchmark": "DEBUG=Eleventy:Benchmark* npx @11ty/eleventy"
+		"benchmark": "DEBUG=Eleventy:Benchmark* npx @11ty/eleventy",
+		"build:retro-color": "npx @11ty/eleventy --config=eleventy.vintage-color.config.js",
+		"build:retro-bw": "npx @11ty/eleventy --config=eleventy.vintage-bw.config.js",
+		"build:retro": "npm run build:retro-color && npm run build:retro-bw",
+		"build:all": "npm run build && npm run build:retro"
 	},
 	"repository": {
 		"type": "git",
