@@ -34,7 +34,7 @@ const hasFfmpeg = hasCommand("ffmpeg");
 module.exports = function (mode) {
 	const isColor = mode === "color";
 	const outputDir = isColor ? "_site_retro" : "_site_retro_bw";
-	const imgMaxWidth = isColor ? 580 : 480;
+	const imgMaxWidth = 500;
 
 	// Track converted images to avoid redundant work
 	const convertedImages = new Set();
@@ -133,10 +133,16 @@ module.exports = function (mode) {
 		// --- Image conversion ---
 
 		async function convertImageToGif(srcFile, destFile, maxWidth) {
-			if (convertedImages.has(destFile)) return;
+			if (convertedImages.has(destFile)) {
+				// Return cached width
+				try {
+					const info = execSync(`identify -format "%w" "${destFile}[0]"`, { stdio: "pipe", timeout: 5000 });
+					return parseInt(info.toString().replace(/"/g, ""), 10) || maxWidth || imgMaxWidth;
+				} catch (e) { return maxWidth || imgMaxWidth; }
+			}
 			if (!fs.existsSync(srcFile)) {
 				console.warn(`[vintage-${mode}] Source not found: ${srcFile}`);
-				return;
+				return maxWidth || imgMaxWidth;
 			}
 
 			ensureDir(destFile);
@@ -145,12 +151,11 @@ module.exports = function (mode) {
 			try {
 				if (hasImageMagick) {
 					if (isColor) {
-						execSync(`${magickCmd} "${srcFile}" -resize ${maxWidth}x\\> -colors 256 "${destFile}"`, { stdio: "pipe", timeout: 30000 });
+						execSync(`${magickCmd} "${srcFile}" -resize ${maxWidth}x\\> -colors 128 "${destFile}"`, { stdio: "pipe", timeout: 30000 });
 					} else {
 						execSync(`${magickCmd} "${srcFile}" -resize ${maxWidth}x\\> -colorspace Gray -dither FloydSteinberg -colors 2 "${destFile}"`, { stdio: "pipe", timeout: 30000 });
 					}
 				} else {
-					// Fallback: use sharp (available via @11ty/eleventy-img)
 					const sharp = require("sharp");
 					let pipeline = sharp(srcFile).resize(maxWidth, null, { withoutEnlargement: true });
 					if (!isColor) {
@@ -159,8 +164,15 @@ module.exports = function (mode) {
 					await pipeline.gif().toFile(destFile);
 				}
 				convertedImages.add(destFile);
+
+				// Read actual output width
+				try {
+					const info = execSync(`identify -format "%w" "${destFile}[0]"`, { stdio: "pipe", timeout: 5000 });
+					return parseInt(info.toString().replace(/"/g, ""), 10) || maxWidth;
+				} catch (e) { return maxWidth; }
 			} catch (e) {
 				console.warn(`[vintage-${mode}] Image conversion failed for ${srcFile}: ${e.message}`);
+				return maxWidth;
 			}
 		}
 
@@ -169,7 +181,7 @@ module.exports = function (mode) {
 			if (!fs.existsSync(srcFile)) return false;
 
 			ensureDir(destFile);
-			const width = isColor ? 320 : 250;
+			const width = isColor ? 240 : 200;
 			duration = duration || 10;
 
 			try {
@@ -210,14 +222,14 @@ module.exports = function (mode) {
 			const gifName = vintageGifName(this.page.inputPath, src);
 			const destFile = path.join(outputDir, gifName);
 
-			await convertImageToGif(file, destFile);
+			const actualWidth = await convertImageToGif(file, destFile);
 
 			const renderedCaption = caption ? md.renderInline(caption) : "";
 			const url = "/" + gifName;
 
 			return [
 				'<center>',
-				`<img src="${url}" alt="${renderedCaption}">`,
+				`<img src="${url}" alt="${renderedCaption}" width="${actualWidth}">`,
 				`<br><font size="2"><i>${renderedCaption}</i></font>`,
 				'</center><br>'
 			].join("\n");
@@ -234,7 +246,7 @@ module.exports = function (mode) {
 			if (success) {
 				return [
 					'<center>',
-					`<img src="/${gifName}" alt="${caption}">`,
+					`<img src="/${gifName}" alt="${caption}" width="${imgMaxWidth}">`,
 					`<br><font size="2"><i>${caption} (animated)</i></font>`,
 					'</center><br>'
 				].join("\n");
@@ -249,9 +261,9 @@ module.exports = function (mode) {
 			const gifName = vintageGifName(this.page.inputPath, src);
 			const destFile = path.join(outputDir, gifName);
 
-			await convertImageToGif(file, destFile);
+			const actualWidth = await convertImageToGif(file, destFile);
 
-			return `<img src="/${gifName}" alt="${alt}">`;
+			return `<img src="/${gifName}" alt="${alt}" width="${actualWidth}">`;
 		});
 
 		// blogthumbnail (not used in vintage postslist, but registered to avoid errors)
@@ -361,15 +373,19 @@ module.exports = function (mode) {
 				replacements.push({ fullMatch, before, after, src, gifSrc, sourceFile, destFile });
 			}
 
-			// Convert all images
+			// Convert all images and track widths
+			const widths = [];
 			for (const r of replacements) {
-				await convertImageToGif(r.sourceFile, r.destFile);
+				const w = await convertImageToGif(r.sourceFile, r.destFile);
+				widths.push(w);
 			}
 
 			// Apply replacements in the HTML
 			let result = content;
-			for (const r of replacements) {
-				result = result.replace(r.fullMatch, `${r.before}${r.gifSrc}${r.after}`);
+			for (let i = 0; i < replacements.length; i++) {
+				const r = replacements[i];
+				const newTag = `${r.before}${r.gifSrc}" width="${widths[i]}${r.after}`;
+				result = result.replace(r.fullMatch, newTag);
 			}
 
 			return result;
@@ -399,7 +415,7 @@ module.exports = function (mode) {
 				data: "../_data",
 				output: outputDir,
 			},
-			pathPrefix: "/",
+			pathPrefix: isColor ? "/" : "/bw/",
 		};
 	};
 };
